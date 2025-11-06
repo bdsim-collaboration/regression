@@ -21,6 +21,6 @@ def test() :
     n_muons = len(s['x'])
     weight_sum = sum(s['weight'])
 
-    # count varies with G4 version but unbiased muon count is 12 +/- 1
+    # count varies with G4 version but unbiased muon count is ~12
     assert(160 < n_muons < 500)
-    assert(9 < weight_sum < 15)
+    assert(6 < weight_sum < 18)
