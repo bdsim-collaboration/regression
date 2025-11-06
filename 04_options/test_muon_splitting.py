@@ -19,5 +19,8 @@ def test() :
     d = pybdsim.DataPandas.BDSIMOutput(root_name)
     s = d.get_sampler("sampler.")
     n_muons = len(s['x'])
+    weight_sum = sum(s['weight'])
 
-    assert(n_muons == 353)
+    # count varies with G4 version but unbiased muon count is 12 +/- 1
+    assert(160 < n_muons < 500)
+    assert(9 < weight_sum < 15)

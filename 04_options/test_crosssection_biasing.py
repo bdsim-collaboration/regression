@@ -11,7 +11,7 @@ def test() :
     gmad_name     = base_name+".gmad"
     root_name     = base_name+".root"
 
-    data = {'BIAS_FACTOR': '1e5'}
+    data = {'BIAS_FACTOR': '10'}
 
     pybdsim.Run.RenderGmadJinjaTemplate(template_name,gmad_name,data)
     pybdsim.Run.Bdsim(gmad_name,base_name,ngenerate=100,seed=1)
@@ -19,5 +19,8 @@ def test() :
     d = pybdsim.DataPandas.BDSIMOutput(root_name)
     s = d.get_sampler("sampler.")
     n_muons = len(s['x'])
+    weight_sum = sum(s['weight'])
 
-    assert(n_muons == 61)
+    # count varies with G4 version but unbiased muon count is 12 +/- 1
+    assert(20 < n_muons < 50)
+    assert(9 < weight_sum < 15)
