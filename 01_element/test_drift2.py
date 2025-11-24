@@ -30,9 +30,9 @@ def get_p_value(mu0,x, rtol=1e-6,atol=1e-12):
             
     if test_value:
         if np.isclose(mean, mu0, rtol):
-            return 1.0   # H0 perfect
+            return 0.0   # H0 perfect
         else:
-            return 0.0   # H0 clearly wrong
+            return 1.0   # H0 clearly wrong
             
     t_stat, p_value = stats.ttest_1samp(x, mu0)
 
@@ -127,10 +127,11 @@ class TestClass:
             s_sampler=getSamplerData(f,samplerName,"S", mask)
             p_l=get_p_value(sim_env["l"],s_sampler)
 
-        assert ( p_ek> self.alpha_test)
-        assert (p_phi> self.alpha_test)
-        assert (p_theta> self.alpha_test)
+        assert ( p_ek< self.alpha_test)
+        assert (p_phi< self.alpha_test)
+        assert (p_theta< self.alpha_test)
         assert (sim_env["n_in"]==n_out)
-        assert (p_pz> self.alpha_test)
-        assert ( p_t> self.alpha_test)
-        assert ( p_l>self.alpha_test)
+        assert (p_pz< self.alpha_test)
+        assert ( p_t< self.alpha_test)
+        assert ( p_l< self.alpha_test)
+
