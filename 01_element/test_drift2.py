@@ -72,7 +72,6 @@ def sim_env():
     
     
 class TestClass:
-
     @pytest.mark.parametrize(
     "Ek_in, p_type",
     [
@@ -91,7 +90,6 @@ class TestClass:
         }      
         pybdsim.Run.RenderGmadJinjaTemplate(sim_env["template_name"],sim_env["gmad_name"],data)
         pybdsim.Run.Bdsim(sim_env["gmad_name"],sim_env["base_name"],sim_env["n_in"],1)
-
         with uproot.open(sim_env["root_name"]) as file:
             samplerName="d1."
             f=file['Event'][samplerName]
