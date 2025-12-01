@@ -5,18 +5,37 @@ import uproot
 import numpy as np
 import scipy.constants as const
 
-def getSamplerData(f, samplerName, variable, mask) :
+
+def getSamplerData(f, samplerName, variable, mask=None) :
     d =  f[samplerName+variable].array(library='np') 
     elem = d[0]
     if np.ndim(elem) == 0:
         d_out=np.array(d)
     else:
         d_out =  np.array([x[0] for x in d if x.size>0])
-    d_out = d_out[mask]
+    if mask is not None:
+        d_out = d_out[mask]
     d_out_mean=np.mean(d_out)
     
-    return d_out_mean
+    return d_out_mean, d_out
 
+
+def calculate_number_of_particles(f, samplerName, particle_ID=0):   
+    _,parent_ID= getSamplerData(f, samplerName, 'parentID')
+    mask=parent_ID==particle_ID
+    n_out=np.sum(mask)
+    
+    return n_out,mask
+
+
+def get_mean_projected_momentum(f, samplerName, pi='zp', mask=None): 
+    _,p_out=getSamplerData(f, samplerName, 'p', mask)
+    _,pi_frac=getSamplerData(f, samplerName, pi, mask)
+    pi_out=np.multiply(pi_frac,p_out)
+    pi_out_mean=np.mean(pi_out)
+    
+    return pi_out_mean
+    
     
 def get_theoretical_beam_parameters(Ek_in, p_type, sim_env):
     c=const.c
@@ -63,44 +82,26 @@ class TestClass:
         (1.0, "proton"),
     ]
     )
-    
-    def test_drift2(self, sim_env, Ek_in, p_type) :
-    
+    def test_drift2(self, sim_env, Ek_in, p_type) :   
         E_tot, pz_in, time_out_th= get_theoretical_beam_parameters(Ek_in,p_type,sim_env)
         data = {
             'LENGTH': str(sim_env["l"]),
             'BEAM_ENERGY' : str(Ek_in), #GeV
             'P_TYPE': p_type
-        }
-        
+        }      
         pybdsim.Run.RenderGmadJinjaTemplate(sim_env["template_name"],sim_env["gmad_name"],data)
         pybdsim.Run.Bdsim(sim_env["gmad_name"],sim_env["base_name"],sim_env["n_in"],1)
 
         with uproot.open(sim_env["root_name"]) as file:
             samplerName="d1."
             f=file['Event'][samplerName]
-            a=f[samplerName+'parentID'].array(library='np')
-            parent_ID= np.array([x[0] for x in a if len(x)>0])
-            mask=parent_ID==0 #from initial beam only
-            n_out=np.sum(mask)
-            
-            theta_out_mean=getSamplerData(f,samplerName,"theta", mask)
-            
-            a=f[samplerName+'p'].array(library='np')
-            p_out= np.array([x[0] for x in a if len(x)>0])
-            a=f[samplerName+'zp'].array(library='np')
-            pz_frac= np.array([x[0] for x in a if len(x)>0])
-            pz_out=np.multiply(pz_frac,p_out)
-            pz_out=pz_out[mask]
-            pz_out_mean=np.mean(pz_out)
-    
-            phi_out_mean=getSamplerData(f,samplerName,"phi", mask)
-            
-            Ek_out_mean=getSamplerData(f,samplerName,"kineticEnergy", mask)
-            
-            t_out_mean=getSamplerData(f,samplerName,"T", mask)
-            
-            s_sampler_mean=getSamplerData(f,samplerName,"S", mask)
+            n_out,mask=calculate_number_of_particles(f,samplerName,particle_ID=0) #only primaries
+            theta_out_mean,_=getSamplerData(f,samplerName,"theta",mask)
+            pz_out_mean=get_mean_projected_momentum(f,samplerName,pi='zp',mask=mask)
+            phi_out_mean,_=getSamplerData(f,samplerName,"phi",mask)
+            Ek_out_mean,_=getSamplerData(f,samplerName,"kineticEnergy",mask)
+            t_out_mean,_=getSamplerData(f,samplerName,"T",mask)
+            s_sampler_mean,_=getSamplerData(f,samplerName,"S",mask)
 
         assert Ek_out_mean==pytest.approx(Ek_in,rel=1e-9)
         assert phi_out_mean==pytest.approx(sim_env["phi_in"], rel=1e-9)
@@ -108,4 +109,4 @@ class TestClass:
         assert sim_env["n_in"]==n_out
         assert pz_out_mean==pytest.approx(pz_in,1e-5)
         assert t_out_mean==pytest.approx(time_out_th,1e-6)
-        assert s_sampler_mean==pytest.approx(sim_env["l"],1-9)
+        assert s_sampler_mean==pytest.approx(sim_env["l"],1e-9)
