@@ -33,6 +33,7 @@ def test(testdata_store) :
             we.append(weights[i])
     Ne=sum(we)
     ref_Ne=5.843840659450507
+    
 
     assert (Ne==ref_Ne)
 
