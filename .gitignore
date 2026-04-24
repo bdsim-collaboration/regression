@@ -5,3 +5,5 @@
 __pycache__
 *ipynb
 *mac
+01_element/solenoidBlock*.dat
+01_element/muoncooler*.dat
