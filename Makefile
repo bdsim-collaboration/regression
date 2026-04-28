@@ -6,4 +6,5 @@ clean :
 	rm -f */*~
 	rm -f *~
 	rm -f 01_element/solenoidBlock*.dat
+	rm -f 01_element/muoncooler*.dat
 	rm -rf */__pycache__

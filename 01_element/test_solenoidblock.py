@@ -10,7 +10,7 @@ from jinja2 import Environment, FileSystemLoader
 
 
 
-def check_sampler_point_mapping(points_sampler, points_validated, tolerance=1e-2):
+def check_sampler_point_mapping(points_sampler, points_validated, tolerance=1e-4):
 
 
     assert len(points_sampler) == len(points_validated), \
@@ -27,7 +27,7 @@ def check_sampler_point_mapping(points_sampler, points_validated, tolerance=1e-2
 
     
     assert mean_distance < tolerance, \
-        f"Mean distance {mean_distance:.6f} exceeds threshold {tolerance}"
+        f"Mean distance {max_distance:.6f} exceeds threshold {tolerance}"
     
     return 
 def test() :    
@@ -66,6 +66,6 @@ def test() :
     points_sampler = df_sampler[['X', 'Y']].values
     points_validated = df_validated[['X', 'Y']].values
 
-    check_sampler_point_mapping(points_sampler, points_validated, tolerance=1e-2)
+    check_sampler_point_mapping(points_sampler, points_validated, tolerance=1e-4)
 if __name__ == "__main__":
     test()
