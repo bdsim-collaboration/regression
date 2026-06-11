@@ -3,6 +3,9 @@ import os
 import pybdsim
 import pytest
 
+N_EVENTS = 100
+N_THREADS = 1
+
 
 TEST_CASES = [
     ("storeTrajectory", "storeTrajectory=1"),
@@ -40,6 +43,11 @@ TEST_CASES = [
 ]
 
 
+def _assert_non_empty_file(path):
+    assert os.path.exists(path)
+    assert os.path.getsize(path) > 0
+
+
 @pytest.mark.parametrize("label,option_lines", TEST_CASES)
 def test_trajectory_option(label, option_lines):
     test_dir = os.path.dirname(__file__)
@@ -57,10 +65,8 @@ def test_trajectory_option(label, option_lines):
     }
 
     pybdsim.Run.RenderGmadJinjaTemplate(template_name, gmad_name, data)
-    pybdsim.Run.Bdsim(gmad_name, base_name, 100, 1)
-
-    assert os.path.exists(root_name)
+    pybdsim.Run.Bdsim(gmad_name, base_name, N_EVENTS, N_THREADS)
+    _assert_non_empty_file(root_name)
 
     pybdsim.Run.RebdsimOptics(root_name, optics_name)
-
-    assert os.path.exists(optics_name)
+    _assert_non_empty_file(optics_name)
