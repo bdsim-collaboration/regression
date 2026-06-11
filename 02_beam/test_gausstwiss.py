@@ -41,28 +41,36 @@ def test() :
 
 
     sigma_x_generated = np.sqrt(cov_xxp[0][0])
-    sigma_xp_generated = np.sqrt(cov_xxp[1][1])
     sigma_y_generated = np.sqrt(cov_yyp[0][0])
-    sigma_yp_generated = np.sqrt(cov_yyp[1][1])
     sigma_x_calculated = np.sqrt(float(params['BETX'])*float(params['EMITX']))
     sigma_y_calculated = np.sqrt(float(params['BETY'])*float(params['EMITY']))
-
     
     emittance_x_generated = np.sqrt(cov_xxp[0][0]*cov_xxp[1][1]-cov_xxp[0][1]*cov_xxp[1][0])
     emittance_y_generated = np.sqrt(cov_yyp[0][0]*cov_yyp[1][1]-cov_yyp[0][1]*cov_yyp[1][0])
     emittance_x_input = float(params['EMITX'])
     emittance_y_input = float(params['EMITY'])
+    
+    courant_synder_gamma_x = 1/float(params['BETX']) # if alphax == 0
+    courant_synder_gamma_y = 1/float(params['BETY']) # if alphay == 0
+    
+    sigma_xp_generated = np.sqrt(cov_xxp[1][1])
+    sigma_yp_generated = np.sqrt(cov_yyp[1][1])
+    sigma_xp_calculated = (emittance_x_input/np.pi-sigma_x_calculated*courant_synder_gamma_x)/float(params['BETX'])
+    sigma_yp_calculated = (emittance_y_input/np.pi-sigma_y_calculated*courant_synder_gamma_y)/float(params['BETY'])
 
 
-    print("assert sigma_x_calculated = ",sigma_x_calculated, "= sigma_x_generated = ", sigma_x_generated)
-    print("assert sigma_y_calculated = ",sigma_y_calculated, "= sigma_y_generated = ", sigma_y_generated)
-    print("assert emittance_x_input = ", emittance_x_input, "= emittance_x_calculated = ", emittance_x_generated)
-    print("assert emittance_y_input = ", emittance_y_input, "= emittance_y_calculated = ", emittance_y_generated)
+
+
+
+
     assert(number_particles == ngenerate)
     assert(sigma_x_calculated == pytest.approx(sigma_x_generated,abs=1e-3))
     assert(sigma_y_calculated == pytest.approx(sigma_x_generated,abs=1e-3))
+    assert(sigma_xp_calculated == pytest.approx(sigma_xp_generated,abs=1e-3))
+    assert(sigma_yp_calculated == pytest.approx(sigma_xp_generated,abs=1e-3))
     assert(emittance_x_input == pytest.approx(emittance_x_generated,abs=1e-3))
     assert(emittance_y_input == pytest.approx(emittance_y_generated,abs=1e-3))
+
 
 
 
