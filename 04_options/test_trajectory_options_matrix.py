@@ -42,10 +42,10 @@ TEST_CASES = [
 
 @pytest.mark.parametrize("label,option_lines", TEST_CASES)
 def test_trajectory_option(label, option_lines):
-    os.chdir(os.path.dirname(__file__))
+    test_dir = os.path.dirname(__file__)
 
-    base_name = f"trajectory_options_matrix_{label}"
-    template_name = "trajectory_options_matrix.tpl"
+    base_name = os.path.join(test_dir, f"trajectory_options_matrix_{label}")
+    template_name = os.path.join(test_dir, "trajectory_options_matrix.tpl")
     gmad_name = base_name + ".gmad"
     root_name = base_name + ".root"
     optics_name = base_name + "_optics.root"
