@@ -16,7 +16,7 @@ def test():
     params = {
         'FIELD_TYPE': 'bmap1d',
         'FIELD_FORMAT': 'bdsim1d',
-        'FIELD_FILE': '1dexample.dat.gz',
+        'FIELD_FILE': '1dexample.dat',
         'FIELD_LENGTH': '1.0',
         'BEAM_ENERGY': '1.0'
     }
