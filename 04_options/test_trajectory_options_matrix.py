@@ -6,7 +6,7 @@ import pytest
 
 TEST_CASES = [
     ("storeTrajectory", "storeTrajectory=1"),
-    ("storeTrajectories_alias", "storeTrajectories=1"),
+    ("storeTrajectories", "storeTrajectories=1"),
     ("storeTrajectoryDepth", "storeTrajectory=1, storeTrajectoryDepth=1"),
     ("storeTrajectoryELossSRange", 'storeTrajectory=1, storeTrajectoryELossSRange="0.0:10.0"'),
     ("storeTrajectoryEnergyThreshold", "storeTrajectory=1, storeTrajectoryEnergyThreshold=0.01*GeV"),
@@ -41,7 +41,7 @@ TEST_CASES = [
 
 
 @pytest.mark.parametrize("label,option_lines", TEST_CASES)
-def test(label, option_lines):
+def test_trajectory_option(label, option_lines):
     os.chdir(os.path.dirname(__file__))
 
     base_name = f"trajectory_options_matrix_{label}"
