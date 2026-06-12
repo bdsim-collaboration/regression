@@ -1,9 +1,6 @@
 import pybdsim
 import os
 import pytest
-from pathlib import Path
-
-TEST_DIR = Path(__file__).parent
 
 FIELD_INTERPOLATION_CONFIGS = [
     {
@@ -286,7 +283,7 @@ def test_field_interpolation(config):
     os.chdir(os.path.dirname(__file__))
 
     base_name = f"field_{config['name']}"
-    template_name = "field_interpolator.tpl"
+    template_name = ("field_map_interpolator.tpl")
     gmad_name = base_name + ".gmad"
     root_name = base_name + ".root"
 
