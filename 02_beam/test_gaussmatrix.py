@@ -2,7 +2,6 @@ import pytest
 import pybdsim
 import numpy as np
 import os
-import matplotlib.pyplot as plt
 def test() :
 
     os.chdir(os.path.dirname(__file__))
@@ -11,7 +10,6 @@ def test() :
     template_name = base_name+".tpl"
     gmad_name     = base_name+".gmad"
     root_name     = base_name+".root"
-    optics_name   = base_name+"_optics.root"
 
     l  = 2.0 
     params = {
