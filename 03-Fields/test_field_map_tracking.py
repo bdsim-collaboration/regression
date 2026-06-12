@@ -79,13 +79,11 @@ def test_field_tracking(config):
 
     os.chdir(os.path.dirname(__file__))
 
-    # === Setup filenames ===
     base_name = f"field_{config['name']}"
-    template_name = "field_track.tpl"
+    template_name = "field_map_track.tpl"
     gmad_name = base_name + ".gmad"
     root_name = base_name + ".root"
 
-    # === Test parameters ===
     params = {
         'FIELD_TYPE': config['field_type'],
         'FIELD_FORMAT': config['field_format'],
@@ -94,11 +92,9 @@ def test_field_tracking(config):
         'BEAM_ENERGY': config['beam_energy']
     }
 
-    # === Run simulation ===
     pybdsim.Run.RenderGmadJinjaTemplate(template_name, gmad_name, params)
     pybdsim.Run.Bdsim(gmad_name, base_name, ngenerate=5000, seed=1)
 
-    # === Extract data ===
     data = pybdsim.DataPandas.BDSIMOutput(root_name)
     sampler_data = data.get_sampler("d2.")
 
@@ -118,7 +114,6 @@ def test_field_tracking(config):
     sampler_energy_sigma = sampler_energy.std()
     sampler_energy_mean = sampler_energy.mean()
 
-    # === Assertions ===
     assert sampler_number == config['expected_samples']
     assert pytest.approx(sampler_x_sigma, rel=1e-4) == config['expected_x_sigma']
     assert pytest.approx(sampler_xp_sigma, rel=1e-4) == config['expected_xp_sigma']
