@@ -1,5 +1,5 @@
 d1: drift, l=1*m;
-t1: sbend, l={{ LENGTH }}*m, angle={{ ANGLE }};
+t1: sbend, l={{ LENGTH }}*m, angle={{ ANGLE }}, horizontalWidth={{ HORIZONTAL_WIDTH }}*m , tilt={{ TILT1 }}, e1={{ E1 }}, e2={{ E2 }} , h1={{ H1 }}, h2= {{ H2 }}, fint= {{ FINT }}, fintx= {{ FINTX}}, fintK2= {{ FINTK2 }}, fintxK2={{ FINTXK2}}, hgap= {{ HGAP }};
 d2: drift, l=1*m;
 
 l0 : line = (d1, t1, d2);
@@ -8,8 +8,10 @@ use, period=l0;
 
 sample, all;
 
-beam, particle="e-",
-      energy={{ BEAM_ENERGY }}*GeV,
+option, sampleElementsWithPoleface=1;
+
+beam, particle="{{ PARTICLE_TYPE }}",
+      kineticEnergy={{ BEAM_ENERGY }}*MeV,
       X0=0.0*m,
       Xp0=0.0,
       Y0=0.0*m,
@@ -27,3 +29,5 @@ beam, particle="e-",
       emity=5e-7*m,
       sigmaE=0.0,
       sigmaT=1e-11;
+
+option, integratorSet= "{{ INTEGRATOR }}"; !"geant4"; !"bdsimmatrix",
