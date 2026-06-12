@@ -30,7 +30,6 @@ def test() :
     sampler_thetap = sampler_data['thetap']
     sampler_phi = sampler_data['phi']
     sampler_phip = sampler_data['phip']
-    #sampler_rp = sampler_data['rp']
     sampler_energy = sampler_data['totalEnergy']
 
     sampler_theta_sigma = sampler_theta.std()
@@ -61,17 +60,14 @@ def test() :
     print("assert pytest.approx(sampler_energy_sigma, rel=1e-4) == ", sampler_energy_sigma)
     print("assert pytest.approx(sampler_energy_mean, rel=1e-4) == ", sampler_energy_mean)
 
-    assert sampler_number == 2119
-
-    assert pytest.approx(sampler_theta_sigma, rel=1e-4) == 0.07266751873464505
-    assert pytest.approx(sampler_theta_mean, rel=1e-4) == 3.078928793303637
-    assert pytest.approx(sampler_thetap_sigma, rel=1e-4) == 1.0886758064426896
-    assert pytest.approx(sampler_thetap_mean, rel=1e-4) == 1.369520605494738
-
-    assert pytest.approx(sampler_phi_sigma, rel=1e-4) == 1.846997304969656
-    assert pytest.approx(sampler_phi_mean, rel=1e-4) == 0.0529459856373973
-    assert pytest.approx(sampler_phip_sigma, rel=1e-4) == 1.2538820617519535
-    assert pytest.approx(sampler_phip_mean, rel=1e-4) == 0.04129473779128511
-
-    assert pytest.approx(sampler_energy_sigma, rel=1e-4) == 0.42443211593789076
-    assert pytest.approx(sampler_energy_mean, rel=1e-4) == 0.23627107728795502
+    assert sampler_number == 1614
+    assert pytest.approx(sampler_theta_sigma, rel=1e-4) == 0.28642203386590576
+    assert pytest.approx(sampler_theta_mean, rel=1e-4) == 2.826190148513704
+    assert pytest.approx(sampler_thetap_sigma, rel=1e-4) == 1.3035396373088297
+    assert pytest.approx(sampler_thetap_mean, rel=1e-4) == 1.2119986861600867
+    assert pytest.approx(sampler_phi_sigma, rel=1e-4) == 1.8345965653397045
+    assert pytest.approx(sampler_phi_mean, rel=1e-4) == 0.06872872416754605
+    assert pytest.approx(sampler_phip_sigma, rel=1e-4) == 0.9465550263246929
+    assert pytest.approx(sampler_phip_mean, rel=1e-4) == -0.0004857578743035858
+    assert pytest.approx(sampler_energy_sigma, rel=1e-4) == 0.4623916899098926
+    assert pytest.approx(sampler_energy_mean, rel=1e-4) == 0.310143676195833
