@@ -35,4 +35,4 @@ s1: samplerplacement, referenceElement="t1",
 		              samplerType="sphere",
                       x=0*cm, y=0*cm, s=0*cm,
                       axisAngle=0, axisY=0, angle=0,
-                      aper1={{ LENGTH }}/2*m;
+                      aper1={{ LENGTH }}*m;
