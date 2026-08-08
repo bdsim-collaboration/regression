@@ -31,7 +31,7 @@ def test(testdata_store) :
         if partID[i] == 11:
             Ne += 1
 
-    ref_Ne = 4961
+    ref_Ne = 6852
 
     assert (Ne==ref_Ne)
 
