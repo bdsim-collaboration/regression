@@ -3,7 +3,7 @@ import pybdsim
 import numpy as np
 import os
 
-def test() :
+def test(geant4_version, bdsim_version, test_length, testlength_primaries, testdata_store) :
 
     os.chdir(os.path.dirname(__file__))
     
@@ -15,12 +15,15 @@ def test() :
     l  = 2.0 
     params = {
         'ENERGY': '1',
-        'LENGTH': '2'
+        'DRIFT_LENGTH': '2',
+        'X0' : 0,
+        'Y0' : 0,
     }
-    ngenerate = 5000
+
+    nprimary = testlength_primaries.get_nprimary(__file__,test_length)
 
     pybdsim.Run.RenderGmadJinjaTemplate(template_name,gmad_name,params)
-    pybdsim.Run.Bdsim(gmad_name,base_name,ngenerate,1)
+    pybdsim.Run.Bdsim(gmad_name,base_name,nprimary,1)
 
     data = pybdsim.DataPandas.BDSIMOutput(root_name)
     primary_data = data.get_primary()
@@ -63,7 +66,7 @@ def test() :
     emittance_x_sampler = np.sqrt(sampler_cov_xxp[0][0]*sampler_cov_xxp[1][1]-sampler_cov_xxp[0][1]*sampler_cov_xxp[1][0])
     emittance_y_sampler = np.sqrt(sampler_cov_yyp[0][0]*sampler_cov_yyp[1][1]-sampler_cov_yyp[0][1]*sampler_cov_yyp[1][0])
 
-    assert(number_particles == ngenerate)
+    assert(number_particles == nprimary)
     assert(0 == pytest.approx(sigma_x_generated,abs=1e-3))
     assert(0 == pytest.approx(sigma_x_generated,abs=1e-3))
     assert(0 == pytest.approx(emittance_x_generated,abs=1e-3))
@@ -71,7 +74,7 @@ def test() :
     assert(0 == pytest.approx(sigma_xp_generated,abs=1e-3))
     assert(0 == pytest.approx(sigma_yp_generated,abs=1e-3))
 
-    assert(sampler_number == ngenerate)
+    assert(sampler_number == nprimary)
     assert(0 == pytest.approx(sigma_x_sampler,abs=1e-3))
     assert(0 == pytest.approx(sigma_x_sampler,abs=1e-3))
     assert(0 == pytest.approx(emittance_x_sampler,abs=1e-3))
