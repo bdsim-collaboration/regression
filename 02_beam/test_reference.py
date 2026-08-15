@@ -3,7 +3,14 @@ import pybdsim
 import numpy as np
 import os
 
-def test(geant4_version, bdsim_version, test_length, testlength_primaries, testdata_store) :
+
+@pytest.mark.parametrize("param, value", [
+    ('X0', "0.1*cm"),
+    ('Y0', "0.1*cm"),
+    ("Xp0", "0.1"),
+    ("Yp0","0.1")
+])
+def test(geant4_version, bdsim_version, test_length, testlength_primaries, testdata_store, param, value) :
 
     os.chdir(os.path.dirname(__file__))
     
@@ -13,12 +20,15 @@ def test(geant4_version, bdsim_version, test_length, testlength_primaries, testd
     root_name     = base_name+".root"
 
     l  = 2.0 
-    params = {
-        'ENERGY': '1',
-        'DRIFT_LENGTH': '2',
-        'X0' : 0,
-        'Y0' : 0,
+    params = {'ENERGY': '1',
+              'DRIFT_LENGTH': '2',
+              'X0' : 0,
+              'Y0' : 0,
+              'Xp0' : 0,
+              'Yp0' : 0,
     }
+
+    params[param] = value
 
     nprimary = testlength_primaries.get_nprimary(__file__,test_length)
 
@@ -82,6 +92,7 @@ def test(geant4_version, bdsim_version, test_length, testlength_primaries, testd
     assert(0 == pytest.approx(sigma_xp_sampler,abs=1e-3))
     assert(0 == pytest.approx(sigma_yp_sampler,abs=1e-3))
 
+    testdata_store.add_test_object(__file__,value, "param "+str(param), nprimary)
 
 
 
