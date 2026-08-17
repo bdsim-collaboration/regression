@@ -4,13 +4,13 @@ import numpy as np
 import os
 
 
-@pytest.mark.parametrize("param, value", [
-    ('X0', "0.1*cm"),
-    ('Y0', "0.1*cm"),
-    ("Xp0", "0.1"),
-    ("Yp0","0.1")
+@pytest.mark.parametrize("param, value, pname", [
+    ('X0', "0.1*cm","p1"),
+    ('Y0', "0.1*cm","p2"),
+    ('Xp0', "0.1", "p3"),
+    ('Yp0',"0.1", "p4")
 ])
-def test(geant4_version, bdsim_version, test_length, testlength_primaries, testdata_store, param, value) :
+def test(geant4_version, bdsim_version, test_length, testlength_primaries, testdata_store, param, value, pname) :
 
     os.chdir(os.path.dirname(__file__))
     
@@ -92,7 +92,7 @@ def test(geant4_version, bdsim_version, test_length, testlength_primaries, testd
     assert(0 == pytest.approx(sigma_xp_sampler,abs=1e-3))
     assert(0 == pytest.approx(sigma_yp_sampler,abs=1e-3))
 
-    testdata_store.add_test_object(__file__,value, "param "+str(param), nprimary)
+    te = testdata_store.new_test_entry("02_beam/reference"+"_"+pname, __file__, nprimary, 0)
 
 
 
