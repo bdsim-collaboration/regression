@@ -1,6 +1,8 @@
 import pybdsim
 import numpy
 import matplotlib.pyplot as plt
+from matplotlib.colors import LogNorm
+
 
 def analysis(file_name = None) :
     '''
@@ -34,18 +36,20 @@ def analysis(file_name = None) :
     ybins = numpy.linspace(photon_angle.min(), photon_angle.max(), 50)
     counts, xedges, yedges = numpy.histogram2d(photon_energy, photon_angle, bins=[xbins,ybins])  # angle in mrad
 
-    ax = plt.figure(figsize=(7, 6))
-    plt.imshow(
-        numpy.log10(counts.T),           # transpose: histogram2d returns [x_bin, y_bin], imshow wants [row, col]
-        origin='lower',
-        extent=[xbins.min(), xbins.max(), ybins.min(), ybins.max()],
-        aspect='auto',
-        cmap='viridis'
-    )
-    plt.colorbar(label='Counts')
+
+    ax = plt.figure(figsize=(7, 7))
+
+    plt.subplot(2,2,1)
+    plt.pcolormesh(xedges, yedges, counts.T, cmap='viridis', norm=LogNorm())
+    plt.gca().set_xscale('log')
     plt.xlabel('energy/GeV')
     plt.ylabel('angle/mrad')
-    plt.title('2D Histogram')
+
+    plt.subplot(2,2,2)
+    plt.hist(photon_angle,50,(photon_angle.min(), photon_angle.max()), orientation='horizontal')
+
+    plt.subplot(2,2,3)
+    plt.hist(photon_energy,50,(photon_energy.min(), photon_energy.max()))
+
     plt.show()
 
-    return photon_energy, photon_angle
