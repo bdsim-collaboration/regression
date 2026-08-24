@@ -3,7 +3,6 @@ import numpy
 import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
 
-
 def analysis(file_name = None) :
     '''
     Plot 2D histogram of energy/angle correlation
