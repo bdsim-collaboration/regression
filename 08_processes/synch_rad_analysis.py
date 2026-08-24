@@ -27,19 +27,24 @@ def analysis(file_name = None) :
                 photon_angle.append(first_step['py']/first_step['pz'])
                 photon_energy.append(first_step['kineticEnergy'])
 
-    counts, xedges, yedges = numpy.histogram2d(photon_energy, photon_angle, bins=50)
+    photon_energy = numpy.array(photon_energy)
+    photon_angle = numpy.array(photon_angle)/1e-3
 
-    plt.figure(figsize=(7, 6))
+    xbins = numpy.logspace(numpy.log10(photon_energy.min()),numpy.log10(photon_energy.max()), 50)
+    ybins = numpy.linspace(photon_angle.min(), photon_angle.max(), 50)
+    counts, xedges, yedges = numpy.histogram2d(photon_energy, photon_angle, bins=[xbins,ybins])  # angle in mrad
+
+    ax = plt.figure(figsize=(7, 6))
     plt.imshow(
         numpy.log10(counts.T),           # transpose: histogram2d returns [x_bin, y_bin], imshow wants [row, col]
         origin='lower',
-        extent=[xedges[0], xedges[-1], yedges[0], yedges[-1]],
+        extent=[xbins.min(), xbins.max(), ybins.min(), ybins.max()],
         aspect='auto',
         cmap='viridis'
     )
     plt.colorbar(label='Counts')
-    plt.xlabel('x')
-    plt.ylabel('y')
+    plt.xlabel('energy/GeV')
+    plt.ylabel('angle/mrad')
     plt.title('2D Histogram')
     plt.show()
 
