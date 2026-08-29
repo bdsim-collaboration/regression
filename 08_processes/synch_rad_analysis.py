@@ -14,19 +14,24 @@ def analysis(file_name = None) :
     photon_angle  = []
 
     # loop over events
+    print(len(d.get_events()))
     for ievt, ntraj in enumerate(d.get_events()['ntraj']):
+
+        print(ievt)
+
         for itraj in range(0,ntraj) :
 
             # get trajectory
-            t = d.get_trajectory(ievt, itraj)
+            t, td = d.get_trajectory(ievt, itraj)
 
             # first step
             first_step = t.iloc[0]
 
             # continue loop if not photon
-            if first_step['parentID'] != 0 :
+            if td['parentID'] != 0 :
                 photon_angle.append(first_step['py']/first_step['pz'])
                 photon_energy.append(first_step['kineticEnergy'])
+
 
     photon_energy = numpy.array(photon_energy)
     photon_angle = numpy.array(photon_angle)/1e-3
@@ -51,4 +56,3 @@ def analysis(file_name = None) :
     plt.hist(photon_energy,50,(photon_energy.min(), photon_energy.max()))
 
     plt.show()
-
