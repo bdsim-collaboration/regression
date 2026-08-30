@@ -2,7 +2,16 @@ import pytest
 import pybdsim
 import numpy as np
 import os
-def test() :
+
+@pytest.mark.parametrize("param, value, pname", [
+    ('X0', "0.1*cm","p1"),
+    ('Y0', "0.1*cm","p2"),
+    ('Xp0', "0.1", "p3"),
+    ('Yp0',"0.1", "p4")
+])
+def test(geant4_version, bdsim_version,
+         test_length, testlength_primaries, testdata_store,
+         param, value, pname) :
 
     os.chdir(os.path.dirname(__file__))
     
@@ -29,10 +38,15 @@ def test() :
         'SIG55' : 1e-9*1e-9,
         'SIG66' : 1e-5*1e-5
             }
-    ngenerate = 5000
+
+    # set parametrised value
+    params[param] = value
+
+    # get number of primaries to simulate
+    nprimary = testlength_primaries.get_nprimary(__file__,test_length)
 
     pybdsim.Run.RenderGmadJinjaTemplate(template_name,gmad_name,params)
-    pybdsim.Run.Bdsim(gmad_name,base_name,ngenerate,1)
+    pybdsim.Run.Bdsim(gmad_name,base_name,nprimary,1)
 
     data = pybdsim.DataPandas.BDSIMOutput(root_name)
     primary_data = data.get_primary()
@@ -59,7 +73,7 @@ def test() :
     sigma_t_input = np.sqrt(float(paramsValue['SIG55']))
     sigma_energy_input = np.sqrt(float(paramsValue['SIG66']))
 
-    assert(number_particles == ngenerate)
+    assert(number_particles == nprimary)
     assert(sigma_x_input == pytest.approx(sigma_x_generated,abs=1e-3))
     assert(sigma_xp_input == pytest.approx(sigma_xp_generated,abs=1e-3))
     assert(sigma_y_input == pytest.approx(sigma_x_generated,abs=1e-3))
@@ -67,7 +81,8 @@ def test() :
     assert(sigma_t_input == pytest.approx(sigma_t_generated,abs=1e-1))
     assert(sigma_energy_input == pytest.approx(sigma_energy_generated,abs=1e-3))
 
-
+    te = testdata_store.new_test_entry("02_beam/guassmatrix"+"_"+pname, __file__, nprimary, 0)
+    te.add_input_parameter_dict(params)
 
 
 

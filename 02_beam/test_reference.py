@@ -3,14 +3,15 @@ import pybdsim
 import numpy as np
 import os
 
-
 @pytest.mark.parametrize("param, value, pname", [
     ('X0', "0.1*cm","p1"),
     ('Y0', "0.1*cm","p2"),
     ('Xp0', "0.1", "p3"),
     ('Yp0',"0.1", "p4")
 ])
-def test(geant4_version, bdsim_version, test_length, testlength_primaries, testdata_store, param, value, pname) :
+def test(geant4_version, bdsim_version,
+         test_length, testlength_primaries, testdata_store,
+         param, value, pname) :
 
     os.chdir(os.path.dirname(__file__))
     
@@ -19,7 +20,8 @@ def test(geant4_version, bdsim_version, test_length, testlength_primaries, testd
     gmad_name     = base_name+".gmad"
     root_name     = base_name+".root"
 
-    l  = 2.0 
+    # default values for test
+    l  = 2.0
     params = {'ENERGY': '1',
               'DRIFT_LENGTH': '2',
               'X0' : 0,
@@ -28,8 +30,10 @@ def test(geant4_version, bdsim_version, test_length, testlength_primaries, testd
               'Yp0' : 0,
     }
 
+    # set parametrised value
     params[param] = value
 
+    # get number of primaries to simulate
     nprimary = testlength_primaries.get_nprimary(__file__,test_length)
 
     pybdsim.Run.RenderGmadJinjaTemplate(template_name,gmad_name,params)
@@ -92,10 +96,22 @@ def test(geant4_version, bdsim_version, test_length, testlength_primaries, testd
     assert(0 == pytest.approx(sigma_xp_sampler,abs=1e-3))
     assert(0 == pytest.approx(sigma_yp_sampler,abs=1e-3))
 
+    # store output parameters for regression testing
     te = testdata_store.new_test_entry("02_beam/reference"+"_"+pname, __file__, nprimary, 0)
+    te.add_input_parameter_dict(params)
+    te.add_output_parameter("x_sigma_generated",sigma_x_generated)
+    te.add_output_parameter("y_sigma_generated",sigma_y_generated)
+    te.add_output_parameter("xp_sigma_generated",sigma_xp_generated)
+    te.add_output_parameter("yp_sigma_generated",sigma_yp_generated)
+    te.add_output_parameter("x_emittance_generated", emittance_x_generated)
+    te.add_output_parameter("y_emittance_generated", emittance_y_generated)
 
-
-
+    te.add_output_parameter("x_sigma_sampler",sigma_x_sampler)
+    te.add_output_parameter("y_sigma_sampler",sigma_y_sampler)
+    te.add_output_parameter("xp_sigma_sampler",sigma_xp_sampler)
+    te.add_output_parameter("yp_sigma_sampler",sigma_yp_sampler)
+    te.add_output_parameter("x_emittance_sampler", emittance_x_sampler)
+    te.add_output_parameter("y_emittance_sampler", emittance_y_sampler)
 
 
     

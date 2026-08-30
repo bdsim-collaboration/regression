@@ -3,7 +3,15 @@ import pybdsim
 import numpy as np
 import os
 
-def test() :
+@pytest.mark.parametrize("param, value, pname", [
+    ('X0', "0.1*cm","p1"),
+    ('Y0', "0.1*cm","p2"),
+    ('Xp0', "0.1", "p3"),
+    ('Yp0',"0.1", "p4")
+])
+def test(geant4_version, bdsim_version,
+         test_length, testlength_primaries, testdata_store,
+         param, value, pname) :
 
     os.chdir(os.path.dirname(__file__))
     
@@ -19,10 +27,14 @@ def test() :
         'EMITX' : '5e-7',
         'EMITY' : '5e-7'
     }
-    ngenerate = 5000
+    # set parametrised value
+    params[param] = value
+
+    # get number of primaries to simulate
+    nprimary = testlength_primaries.get_nprimary(__file__,test_length)
 
     pybdsim.Run.RenderGmadJinjaTemplate(template_name,gmad_name,params)
-    pybdsim.Run.Bdsim(gmad_name,base_name,ngenerate,1)
+    pybdsim.Run.Bdsim(gmad_name,base_name,nprimary,1)
 
     data = pybdsim.DataPandas.BDSIMOutput(root_name)
     primary_data = data.get_primary()
@@ -57,12 +69,7 @@ def test() :
     sigma_xp_calculated = (emittance_x_input/np.pi-sigma_x_calculated*courant_synder_gamma_x)/float(params['BETX'])
     sigma_yp_calculated = (emittance_y_input/np.pi-sigma_y_calculated*courant_synder_gamma_y)/float(params['BETY'])
 
-
-
-
-
-
-    assert(number_particles == ngenerate)
+    assert(number_particles == nprimary)
     assert(sigma_x_calculated == pytest.approx(sigma_x_generated,abs=1e-3))
     assert(sigma_y_calculated == pytest.approx(sigma_x_generated,abs=1e-3))
     assert(sigma_xp_calculated == pytest.approx(sigma_xp_generated,abs=1e-3))
@@ -70,7 +77,7 @@ def test() :
     assert(emittance_x_input == pytest.approx(emittance_x_generated,abs=1e-3))
     assert(emittance_y_input == pytest.approx(emittance_y_generated,abs=1e-3))
 
-
+    te = testdata_store.new_test_entry("02_beam/guasstwiss"+"_"+pname, __file__, nprimary, 0)
 
 
 
