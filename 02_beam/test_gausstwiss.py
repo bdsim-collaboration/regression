@@ -78,6 +78,7 @@ def test(geant4_version, bdsim_version,
     assert(emittance_y_input == pytest.approx(emittance_y_generated,abs=1e-3))
 
     te = testdata_store.new_test_entry("02_beam/guasstwiss"+"_"+pname, __file__, nprimary, 0)
+    te.add_input_parameter_dict(params)
 
 
 
