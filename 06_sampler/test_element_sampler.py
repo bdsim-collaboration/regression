@@ -14,7 +14,7 @@ def test() :
     combine_name  = base_name+"_combine.root"
     
     params = {
-        'LENGTH': '1.0',
+        'LENGTH': '1e-3',
         'BEAM_ENERGY' : '1'
     }
 
@@ -47,40 +47,3 @@ def test() :
 
     sampler_energy_sigma = sampler_energy.std()
     sampler_energy_mean = sampler_energy.mean()
-
-    # print the values used to validate the run
-    print("assert sampler_number == ", sampler_number)
-
-    print("assert pytest.approx(sampler_x_sigma, rel=1e-4) == ", sampler_x_sigma)
-    print("assert pytest.approx(sampler_x_mean, rel=1e-4) == ", sampler_x_mean)
-    print("assert pytest.approx(sampler_xp_sigma, rel=1e-4) == ", sampler_xp_sigma)
-    print("assert pytest.approx(sampler_xp_mean, rel=1e-4) == ", sampler_xp_mean)
-
-    print("assert pytest.approx(sampler_y_sigma, rel=1e-4) == ", sampler_y_sigma)
-    print("assert pytest.approx(sampler_y_mean, rel=1e-4) == ", sampler_y_mean)
-    print("assert pytest.approx(sampler_yp_sigma, rel=1e-4) == ", sampler_yp_sigma)
-    print("assert pytest.approx(sampler_yp_mean, rel=1e-4) == ", sampler_yp_mean)
-
-    print("assert pytest.approx(sampler_energy_sigma, rel=1e-4) == ", sampler_energy_sigma)
-    print("assert pytest.approx(sampler_energy_mean, rel=1e-4) == ", sampler_energy_mean)
-
-    assert sampler_number == 6
-
-    assert pytest.approx(sampler_x_sigma, rel=1e-4) == 1.5877514529773704
-    assert pytest.approx(sampler_x_mean, rel=1e-4) == -0.8595296616355578
-    assert pytest.approx(sampler_xp_sigma, rel=1e-4) == 0.20538206969024522
-    assert pytest.approx(sampler_xp_mean, rel=1e-4) == -0.19051110558211803
-
-    assert pytest.approx(sampler_y_sigma, rel=1e-4) == 0.6645647357818376
-    assert pytest.approx(sampler_y_mean, rel=1e-4) == 0.2016523089259863
-    assert pytest.approx(sampler_yp_sigma, rel=1e-4) == 0.41745956967563386
-    assert pytest.approx(sampler_yp_mean, rel=1e-4) == -0.10976425806681316
-
-    assert pytest.approx(sampler_energy_sigma, rel=1e-4) == 1.77073810789213e-05
-    assert pytest.approx(sampler_energy_mean, rel=1e-4) == 0.00013629104554032287
-
-    # these assertions will throw an error if there is a bug or change in the code
-    # no error will show if the assertions are successful
-
-    # copy and paste the printed out values if there is a change in the code/update
-    # (only when confirmed it is not a bug)

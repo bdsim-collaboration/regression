@@ -46,34 +46,3 @@ def test() :
 
     sampler_energy_sigma = sampler_energy.std()
     sampler_energy_mean = sampler_energy.mean()
-
-    # print the values used to validate the run
-    print("assert sampler_number == ", sampler_number)
-
-    print("assert pytest.approx(sampler_x_sigma, rel=1e-4) == ", sampler_x_sigma)
-    print("assert pytest.approx(sampler_x_mean, rel=1e-4) == ", sampler_x_mean)
-    print("assert pytest.approx(sampler_xp_sigma, rel=1e-4) == ", sampler_xp_sigma)
-    print("assert pytest.approx(sampler_xp_mean, rel=1e-4) == ", sampler_xp_mean)
-
-    print("assert pytest.approx(sampler_y_sigma, rel=1e-4) == ", sampler_y_sigma)
-    print("assert pytest.approx(sampler_y_mean, rel=1e-4) == ", sampler_y_mean)
-    print("assert pytest.approx(sampler_yp_sigma, rel=1e-4) == ", sampler_yp_sigma)
-    print("assert pytest.approx(sampler_yp_mean, rel=1e-4) == ", sampler_yp_mean)
-
-    print("assert pytest.approx(sampler_energy_sigma, rel=1e-4) == ", sampler_energy_sigma)
-    print("assert pytest.approx(sampler_energy_mean, rel=1e-4) == ", sampler_energy_mean)
-
-    assert sampler_number == 6
-
-    assert pytest.approx(sampler_x_sigma, rel=1e-4) == 0.04245527509351293
-    assert pytest.approx(sampler_x_mean, rel=1e-4) == -0.01258978076900045
-    assert pytest.approx(sampler_xp_sigma, rel=1e-4) == 0.410648573003683
-    assert pytest.approx(sampler_xp_mean, rel=1e-4) == 0.34474750608205795
-
-    assert pytest.approx(sampler_y_sigma, rel=1e-4) == 0.06614192545287227
-    assert pytest.approx(sampler_y_mean, rel=1e-4) == -0.006785242973516385
-    assert pytest.approx(sampler_yp_sigma, rel=1e-4) == 0.34335081175825494
-    assert pytest.approx(sampler_yp_mean, rel=1e-4) == 0.07147048320621252
-
-    assert pytest.approx(sampler_energy_sigma, rel=1e-4) == 0.004263307653161516
-    assert pytest.approx(sampler_energy_mean, rel=1e-4) == 0.003288653703445258

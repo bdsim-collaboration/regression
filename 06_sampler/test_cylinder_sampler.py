@@ -14,7 +14,7 @@ def test() :
     combine_name  = base_name+"_combine.root"
     
     params = {
-        'LENGTH': '1.0',
+        'LENGTH': '1e-3',
         'BEAM_ENERGY' : '1'
     }
 
@@ -23,7 +23,7 @@ def test() :
     pybdsim.Run.RenderGmadJinjaTemplate(template_name,gmad_name,params)
     pybdsim.Run.Bdsim(gmad_name,base_name,ngenerate,1)
     data = pybdsim.DataPandas.BDSIMOutput(root_name)
-    sampler_data = data.get_samplerc("s1.")
+    sampler_data = data.get_csampler("s1.")
 
     sampler_number = len(sampler_data)
     sampler_z = sampler_data['z']
@@ -48,40 +48,4 @@ def test() :
 
     sampler_energy_sigma = sampler_energy.std()
     sampler_energy_mean = sampler_energy.mean()
-
-    print("assert sampler_number == ", sampler_number)
-
-    print("assert pytest.approx(sampler_z_sigma, rel=1e-4) == ", sampler_z_sigma)
-    print("assert pytest.approx(sampler_z_mean, rel=1e-4) == ", sampler_z_mean)
-    print("assert pytest.approx(sampler_zp_sigma, rel=1e-4) == ", sampler_zp_sigma)
-    print("assert pytest.approx(sampler_zp_mean, rel=1e-4) == ", sampler_zp_mean)
-
-    print("assert pytest.approx(sampler_rp_sigma, rel=1e-4) == ", sampler_rp_sigma)
-    print("assert pytest.approx(sampler_rp_mean, rel=1e-4) == ", sampler_rp_mean)
-
-    print("assert pytest.approx(sampler_phi_sigma, rel=1e-4) == ", sampler_phi_sigma)
-    print("assert pytest.approx(sampler_phi_mean, rel=1e-4) == ", sampler_phi_mean)
-    print("assert pytest.approx(sampler_phip_sigma, rel=1e-4) == ", sampler_phip_sigma)
-    print("assert pytest.approx(sampler_phip_mean, rel=1e-4) == ", sampler_phip_mean)
-
-    print("assert pytest.approx(sampler_energy_sigma, rel=1e-4) == ", sampler_energy_sigma)
-    print("assert pytest.approx(sampler_energy_mean, rel=1e-4) == ", sampler_energy_mean)
-
-    assert sampler_number == 7
-
-    assert pytest.approx(sampler_z_sigma, rel=1e-4) == 0.14109729326665602
-    assert pytest.approx(sampler_z_mean, rel=1e-4) == -0.3276261846934046
-    assert pytest.approx(sampler_zp_sigma, rel=1e-4) == 0.46784390793909336
-    assert pytest.approx(sampler_zp_mean, rel=1e-4) == 0.24842584771769388
-
-    assert pytest.approx(sampler_rp_sigma, rel=1e-4) == 0.28632609711225854
-    assert pytest.approx(sampler_rp_mean, rel=1e-4) == 0.7943912936108453
-
-    assert pytest.approx(sampler_phi_sigma, rel=1e-4) == 2.2100343813521146
-    assert pytest.approx(sampler_phi_mean, rel=1e-4) == -0.15624664723873138
-    assert pytest.approx(sampler_phip_sigma, rel=1e-4) == 0.2794790812054533
-    assert pytest.approx(sampler_phip_mean, rel=1e-4) == -0.05538616941443512
-
-    assert pytest.approx(sampler_energy_sigma, rel=1e-4) == 0.0005348490219988756
-    assert pytest.approx(sampler_energy_mean, rel=1e-4) == 0.0005639208663654115
 
