@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 def pybdsim_pandas_transfer_check(root_object, pandas_object) :
     import types
@@ -72,7 +73,8 @@ def test_output_pandas_file_not_found(testdata_store) :
     te = testdata_store.new_test_entry("01_output/import_pandas_file_not_found", __file__, 0, 0)
 
 def test_output_pandas_basic(testdata_store) :
-    os.chdir(os.path.dirname(__file__))
+    # os.chdir(os.path.dirname(__file__))
+    os.chdir(Path(__file__).resolve().parent)
 
     import pybdsim
 
@@ -91,7 +93,8 @@ def test_output_pandas_basic(testdata_store) :
     te = testdata_store.new_test_entry("01_output/output_pandas_basic", __file__,10, 0)
 
 def test_output_pandas_header(testdata_store) :
-    os.chdir(os.path.dirname(__file__))
+    #os.chdir(os.path.dirname(__file__))
+    os.chdir(Path(__file__).resolve().parent)
 
     import pybdsim
 
@@ -102,7 +105,8 @@ def test_output_pandas_header(testdata_store) :
     te = testdata_store.new_test_entry("01_output/output_pandas_header", __file__,0, 0)
 
 def test_output_pandas_run(testdata_store) :
-    os.chdir(os.path.dirname(__file__))
+    #os.chdir(os.path.dirname(__file__))
+    os.chdir(Path(__file__).resolve().parent)
 
     import pybdsim
 
@@ -111,7 +115,8 @@ def test_output_pandas_run(testdata_store) :
     b = pd.get_run()
 
 def test_output_pandas_beam(testdata_store) :
-    os.chdir(os.path.dirname(__file__))
+    #os.chdir(os.path.dirname(__file__))
+    os.chdir(Path(__file__).resolve().parent)
 
     import pybdsim
 
@@ -123,7 +128,8 @@ def test_output_pandas_beam(testdata_store) :
 
 
 def test_output_pandas_options(testdata_store):
-    os.chdir(os.path.dirname(__file__))
+    #os.chdir(os.path.dirname(__file__))
+    os.chdir(Path(__file__).resolve().parent)
 
     import pybdsim
 
@@ -135,7 +141,8 @@ def test_output_pandas_options(testdata_store):
 
 
 def test_output_pandas_events(testdata_store):
-    os.chdir(os.path.dirname(__file__))
+    #os.chdir(os.path.dirname(__file__))
+    os.chdir(Path(__file__).resolve().parent)
 
     import pybdsim
 
@@ -147,7 +154,8 @@ def test_output_pandas_events(testdata_store):
 
 
 def test_output_pandas_primary(testdata_store):
-    os.chdir(os.path.dirname(__file__))
+    #os.chdir(os.path.dirname(__file__))
+    os.chdir(Path(__file__).resolve().parent)
 
     import pybdsim
 
@@ -159,7 +167,8 @@ def test_output_pandas_primary(testdata_store):
 
 
 def test_output_pandas_primary_global(testdata_store):
-    os.chdir(os.path.dirname(__file__))
+    #os.chdir(os.path.dirname(__file__))
+    os.chdir(Path(__file__).resolve().parent)
 
     import pybdsim
 
@@ -171,7 +180,8 @@ def test_output_pandas_primary_global(testdata_store):
 
 
 def test_output_pandas_sampler(testdata_store) :
-    os.chdir(os.path.dirname(__file__))
+    #os.chdir(os.path.dirname(__file__))
+    os.chdir(Path(__file__).resolve().parent)
 
     import pybdsim
 
@@ -184,7 +194,8 @@ def test_output_pandas_sampler(testdata_store) :
 
 
 def test_output_pandas_sampler_placement(testdata_store) :
-    os.chdir(os.path.dirname(__file__))
+    #os.chdir(os.path.dirname(__file__))
+    os.chdir(Path(__file__).resolve().parent)
 
     import pybdsim
 
@@ -196,7 +207,8 @@ def test_output_pandas_sampler_placement(testdata_store) :
 
 
 def test_output_pandas_csampler(testdata_store) :
-    os.chdir(os.path.dirname(__file__))
+    #os.chdir(os.path.dirname(__file__))
+    os.chdir(Path(__file__).resolve().parent)
 
     import pybdsim
 
@@ -210,7 +222,8 @@ def test_output_pandas_csampler(testdata_store) :
     s = pd.get_csampler(snames[0])
 
 def test_output_pandas_ssampler(testdata_store) :
-    os.chdir(os.path.dirname(__file__))
+    #os.chdir(os.path.dirname(__file__))
+    os.chdir(Path(__file__).resolve().parent)
 
     import pybdsim
 
@@ -225,7 +238,8 @@ def test_output_pandas_ssampler(testdata_store) :
     # s = pd.get_ssampler(snames[0])
 
 def test_output_eloss(testdata_store) :
-    os.chdir(os.path.dirname(__file__))
+    #os.chdir(os.path.dirname(__file__))
+    os.chdir(Path(__file__).resolve().parent)
 
     import pybdsim
 
@@ -237,7 +251,8 @@ def test_output_eloss(testdata_store) :
 
 
 def test_output_trajectory(testdata_store) :
-    os.chdir(os.path.dirname(__file__))
+    #os.chdir(os.path.dirname(__file__))
+    os.chdir(Path(__file__).resolve().parent)
 
     import pybdsim
 
@@ -251,7 +266,8 @@ def test_output_trajectory(testdata_store) :
     te = testdata_store.new_test_entry("01_output/output_pandas_trajectory", __file__,0, 0)
 
 def test_output_pandas_aperture(testdata_store) :
-    os.chdir(os.path.dirname(__file__))
+    #os.chdir(os.path.dirname(__file__))
+    os.chdir(Path(__file__).resolve().parent)
 
     import pybdsim
 
@@ -263,7 +279,8 @@ def test_output_pandas_aperture(testdata_store) :
 
 
 def test_output_pandas_collimators(testdata_store) :
-    os.chdir(os.path.dirname(__file__))
+    #os.chdir(os.path.dirname(__file__))
+    os.chdir(Path(__file__).resolve().parent)
 
     import pybdsim
 
