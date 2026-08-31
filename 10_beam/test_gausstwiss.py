@@ -2,6 +2,7 @@ import pytest
 import pybdsim
 import numpy as np
 import os
+from pathlib import Path
 
 @pytest.mark.parametrize("param, value, pname", [
     ('X0', "0.1*cm","p1"),
@@ -13,7 +14,7 @@ def test(geant4_version, bdsim_version,
          test_length, testlength_primaries, testdata_store,
          param, value, pname) :
 
-    os.chdir(os.path.dirname(__file__))
+    os.chdir(Path(__file__).resolve().parent)
     
     base_name     = "gausstwiss"
     template_name = base_name+".tpl"

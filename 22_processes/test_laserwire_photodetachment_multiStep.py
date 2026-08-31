@@ -1,10 +1,12 @@
 import pytest
 import pybdsim
 import os
+from pathlib import Path
+
 
 def test(testdata_store) :
 
-    os.chdir(os.path.dirname(__file__))
+    os.chdir(Path(__file__).resolve().parent)
     
     base_name     = "laserwire_photodetachment_multiStep"
     template_name = base_name+".tpl"

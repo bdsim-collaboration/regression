@@ -1,13 +1,14 @@
 import pytest
 import pybdsim
 import os
+from pathlib import Path
 
 import synch_rad_analysis
 
 def test(geant4_version, bdsim_version,
          test_length, testlength_primaries, testdata_store) :
 
-    os.chdir(os.path.dirname(__file__))
+    os.chdir(Path(__file__).resolve().parent)
 
     base_name     = "synch_rad"
     gmad_name     = base_name+".gmad"

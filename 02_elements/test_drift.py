@@ -2,12 +2,12 @@ import pybdsim
 
 import pytest
 import os
+from pathlib import Path
 
 def test(geant4_version, bdsim_version,
          test_length, testlength_primaries, testdata_store) :
+    os.chdir(Path(__file__).resolve().parent)
 
-    os.chdir(os.path.dirname(__file__))
-    
     base_name     = "drift"
     template_name = base_name+".tpl"
     gmad_name     = base_name+".gmad"

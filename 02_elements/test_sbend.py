@@ -3,11 +3,12 @@ from numpy import pi
 from numpy import sin
 from numpy import cos
 import os
+from pathlib import Path
 
 def test(geant4_version, bdsim_version,
          test_length, testlength_primaries, testdata_store) :
 
-    os.path.dirname(__file__)
+    os.chdir(Path(__file__).resolve().parent)
     
     base_name     = "sbend"
     template_name = base_name+".tpl"

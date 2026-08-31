@@ -1,13 +1,13 @@
 import pytest
 import pybdsim
 import os
+from pathlib import Path
 from numpy import sin, cos, sinh, cosh, sqrt
 
 def test(geant4_version, bdsim_version,
          test_length, testlength_primaries, testdata_store) :
+    os.chdir(Path(__file__).resolve().parent)
 
-    os.chdir(os.path.dirname(__file__))
-    
     base_name     = "quadrupole"
     template_name = base_name+".tpl"
     gmad_name     = base_name+".gmad"

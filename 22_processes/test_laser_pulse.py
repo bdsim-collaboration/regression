@@ -1,10 +1,11 @@
 import pytest
 import pybdsim
 import os
+from pathlib import Path
 import numpy as np
 
 def test():
-    os.chdir(os.path.dirname(__file__))
+    os.chdir(Path(__file__).resolve().parent)
 
     base_name = "laser_pulse"
     base_name_1 = "laser_pulse_1"

@@ -1,11 +1,12 @@
 import pytest
 import pybdsim
 import os
+from pathlib import Path
+
 
 def test(testdata_store) :
+    os.chdir(Path(__file__).resolve().parent)
 
-    os.chdir(os.path.dirname(__file__))
-    
     base_name     = "lhcdipole"
     template_name = base_name+".tpl"
     gmad_name     = base_name+".gmad"

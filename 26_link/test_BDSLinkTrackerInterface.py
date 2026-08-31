@@ -1,5 +1,6 @@
 import os
 import pytest
+from pathlib import Path
 
 pytestmark = pytest.mark.xfail(reason="requires bdsim")
 
@@ -284,46 +285,46 @@ def pdgAccessors() :
     return 0
 
 def test_constructor(make_bdsim_test_code, run_bdsim_test_code_as_subprocess) :
-    os.chdir(os.path.dirname(__file__))
+    os.chdir(Path(__file__).resolve().parent)
     code = make_bdsim_test_code(constructor, args="", dir=os.path.dirname(os.path.abspath(__file__)))
     result = run_bdsim_test_code_as_subprocess(code)
 
 def test_constructor_nofile(make_bdsim_test_code, run_bdsim_test_code_as_subprocess) :
-    os.chdir(os.path.dirname(__file__))
+    os.chdir(Path(__file__).resolve().parent)
     code = make_bdsim_test_code(constructor_nofile, args="", dir=os.path.dirname(os.path.abspath(__file__)))
     result = run_bdsim_test_code_as_subprocess(code)
 
 def test_accessLinkObjects(make_bdsim_test_code, run_bdsim_test_code_as_subprocess) :
-    os.chdir(os.path.dirname(__file__))
+    os.chdir(Path(__file__).resolve().parent)
     code = make_bdsim_test_code(accessLinkObjects, args="", dir=os.path.dirname(os.path.abspath(__file__)))
     result = run_bdsim_test_code_as_subprocess(code)
 
 def test_accessors(make_bdsim_test_code, run_bdsim_test_code_as_subprocess):
-    os.chdir(os.path.dirname(__file__))
+    os.chdir(Path(__file__).resolve().parent)
     code = make_bdsim_test_code(accessors, args="", dir=os.path.dirname(os.path.abspath(__file__)))
     result = run_bdsim_test_code_as_subprocess(code)
 
 def test_noNeutralParticles(make_bdsim_test_code, run_bdsim_test_code_as_subprocess):
-    os.chdir(os.path.dirname(__file__))
+    os.chdir(Path(__file__).resolve().parent)
     code = make_bdsim_test_code(noNeutralParticles, args="", dir=os.path.dirname(os.path.abspath(__file__)))
     result = run_bdsim_test_code_as_subprocess(code)
 
 def test_referenceParticle(make_bdsim_test_code, run_bdsim_test_code_as_subprocess):
-    os.chdir(os.path.dirname(__file__))
+    os.chdir(Path(__file__).resolve().parent)
     code = make_bdsim_test_code(referenceParticle, args="", dir=os.path.dirname(os.path.abspath(__file__)))
     result = run_bdsim_test_code_as_subprocess(code)
 
 def test_addParticleXSuite(make_bdsim_test_code, run_bdsim_test_code_as_subprocess):
-    os.chdir(os.path.dirname(__file__))
+    os.chdir(Path(__file__).resolve().parent)
     code = make_bdsim_test_code(addParticleXSuite, args="", dir=os.path.dirname(os.path.abspath(__file__)))
     result = run_bdsim_test_code_as_subprocess(code)
 
 def test_addParticleMomentum(make_bdsim_test_code, run_bdsim_test_code_as_subprocess):
-    os.chdir(os.path.dirname(__file__))
+    os.chdir(Path(__file__).resolve().parent)
     code = make_bdsim_test_code(addParticleMomentum, args="", dir=os.path.dirname(os.path.abspath(__file__)))
     result = run_bdsim_test_code_as_subprocess(code)
 
 def test_pdgAccessors(make_bdsim_test_code, run_bdsim_test_code_as_subprocess):
-    os.chdir(os.path.dirname(__file__))
+    os.chdir(Path(__file__).resolve().parent)
     code = make_bdsim_test_code(pdgAccessors, args="", dir=os.path.dirname(os.path.abspath(__file__)))
     result = run_bdsim_test_code_as_subprocess(code)

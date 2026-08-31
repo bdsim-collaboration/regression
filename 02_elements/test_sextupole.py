@@ -2,14 +2,14 @@ import pytest
 import pybdsim
 import os
 import numpy as np
+from pathlib import Path
 
 def test(geant4_version, bdsim_version,
          test_length, testlength_primaries, testdata_store) :
+    os.chdir(Path(__file__).resolve().parent)
 
     np.set_printoptions(linewidth=200)
 
-    os.chdir(os.path.dirname(__file__))
-    
     base_name     = "sextupole"
     template_name = base_name+".tpl"
     gmad_name     = base_name+".gmad"
