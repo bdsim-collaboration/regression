@@ -24,4 +24,4 @@ def test(geant4_version, bdsim_version,
     pybdsim.Run.RenderGmadJinjaTemplate(template_name,gmad_name,data)
     pybdsim.Run.Bdsim(gmad_name,base_name,500,1)
 
-    te = testdata_store.new_test_entry("05_eloss/eloss_collimator_storeElossLinks", __file__, nprimary, 0)
+    te = testdata_store.new_test_entry("16_eloss/eloss_collimator_storeElossLinks", __file__, nprimary, 0)
