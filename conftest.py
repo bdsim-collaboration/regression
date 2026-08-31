@@ -136,6 +136,7 @@ def make_bdsim_test_code_func(func, args = "", dir="", functions=[]) :
     code_to_run += "ret ="+func_name+"("+args+")\n"
     code_to_run += "sys.exit(ret)"
 
+    print(code_to_run)
     return code_to_run
 
 @pytest.fixture
