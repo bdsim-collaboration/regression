@@ -183,7 +183,7 @@ def bdsimParserBeamline() :
     o = p.GetOptions()
     o['batch'] = True
     o['outputFormat'] = 'rootevent'
-    o['outputFileName'] = "bdsimParserBeamline.root"
+    o['outputFileName'] = "bdsimParserBeamline"
 
     e = p.GetGlobal_Parameters()
 
