@@ -71,14 +71,14 @@ def get_testfile_size(filepath) :
 ###############################################################
 class test_nprimary :
     def __init__(self):
-        self.nprimary = {"01_element/test_drift":{"short":1000,"medium":100,"long":100},
-                         "01_element/test_quadrupole":{"short":1000,"medium":100,"long":1000},
-                         "01_element/test_rbend":{"short":1000,"medium":1000,"long":1000},
-                         "01_element/test_sbend":{"short":1000,"medium":1000,"long":1000},
-                         "01_element/test_sextupole":{"short":1000,"medium":1000,"long":1000},
-                         "02_beam/test_reference":{"short":1000,"medium":1000,"long":1000},
-                         "02_beam/test_gaussmatrix": {"short": 1000, "medium": 1000, "long": 1000},
-                         "02_beam/test_gausstwiss": {"short": 1000, "medium": 1000, "long": 1000},
+        self.nprimary = {"02_elements/test_drift":{"short":1000,"medium":100,"long":100},
+                         "02_elements/test_quadrupole":{"short":1000,"medium":100,"long":1000},
+                         "02_elements/test_rbend":{"short":1000,"medium":1000,"long":1000},
+                         "02_elements/test_sbend":{"short":1000,"medium":1000,"long":1000},
+                         "02_elements/test_sextupole":{"short":1000,"medium":1000,"long":1000},
+                         "10_beam/test_reference":{"short":1000,"medium":1000,"long":1000},
+                         "10_beam/test_gaussmatrix": {"short": 1000, "medium": 1000, "long": 1000},
+                         "10_beam/test_gausstwiss": {"short": 1000, "medium": 1000, "long": 1000},
                          "06_scorer/test_scorer3d":{"short":5000,"medium":10000,"long":50000},
                          "05_eloss/test_eloss_collimator":{"short":1000,"medium":10000,"long":10000},
                          "05_eloss/test_eloss_collimator_storeElossLinks": {"short": 1000, "medium": 10000, "long": 10000},

@@ -6,21 +6,19 @@ def test(testdata_store) :
 
     os.chdir(os.path.dirname(__file__))
     
-    base_name     = "lhcdipole"
+    base_name     = "lhcquadrupole"
     template_name = base_name+".tpl"
     gmad_name     = base_name+".gmad"
     root_name     = base_name+".root"
 
     # TODO turn in pytest parametrize
-    # check field in primary aperture,
+    # check field along diagonal in primary aperture,
     # secondary aperture and outside of the secondary aperture (yoke)
-    # TODO turn in pytest parametrize
-    listX0 = [0,19.4,19.4]
-    listY0 = [0,0,4]
-    listXoffset = [1.9062219,-0.1165236,-0.1521038]
+    listX0 = [1,20.4,23.4]
+    listY0 = [1,1,4]
+    listXoffset = [-0.0198441,0.1741561,0.2050054]
 
     nprimary = 1
-
     for i in range(len(listXoffset)):
 
         X0,Y0,Xoffset = listX0[i],listY0[i],listXoffset[i]
@@ -38,5 +36,5 @@ def test(testdata_store) :
 
         assert(s['x'][0] == pytest.approx(Xoffset, rel=1e-4))
 
-    te = testdata_store.new_test_entry("02_element/lhcdipole", __file__, nprimary, 0)
+    te = testdata_store.new_test_entry("02_elements/lhcquadrupole", __file__, nprimary, 0)
     te.add_output_file(os.path.dirname(__file__)+"/"+root_name, "root")

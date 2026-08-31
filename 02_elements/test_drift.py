@@ -1,26 +1,22 @@
-import pytest
 import pybdsim
+
+import pytest
 import os
-import numpy as np
 
 def test(geant4_version, bdsim_version,
          test_length, testlength_primaries, testdata_store) :
 
-    np.set_printoptions(linewidth=200)
-
     os.chdir(os.path.dirname(__file__))
     
-    base_name     = "sextupole"
+    base_name     = "drift"
     template_name = base_name+".tpl"
     gmad_name     = base_name+".gmad"
     root_name     = base_name+".root"
     optics_name   = base_name+"_optics.root"
 
-    l  = 1.0
-    k2 = -5.0
+    l  = 2.0 
     data = {
-        'LENGTH': l,
-        'K2' : k2,
+        'LENGTH': str(l),
         'BEAM_ENERGY' : '1'
     }
 
@@ -32,21 +28,19 @@ def test(geant4_version, bdsim_version,
 
     do = pybdsim.DataPandas.REBDSIMOptics(optics_name)
     do_df = do.get_optics()
-
+    print(do_df)
     
-    rmat = pybdsim.Analysis.CalculateTaylorMapOrder2(root_name,"d1.","s1.", average=True)
+    rmat = pybdsim.Analysis.CalculateRMatrix(root_name,"d1.","t1.",size=6, average=True)
+    ref_rmat = [[1,l,0,0,0,0],
+                [0,1,0,0,0,0],
+                [0,0,1,l,0,0],
+                [0,0,0,1,0,0],
+                [0,0,0,0,1,0],
+                [0,0,0,0,0,1]]
 
-    #ref_rmat = [[1,l,0,0,0,0],
-    #            [0,1,0,0,0,0],
-    #            [0,0,1,l,0,0],
-    #            [0,0,0,1,0,0],
-    #            [0,0,0,0,1,0],
-    #            [0,0,0,0,0,1]]
+    assert pybdsim.Testing.compare_matrix(rmat,ref_rmat)
 
-
-    #print('maximum matrix difference',pybdsim.Testing.max_matrix_diff(rmat,ref_rmat))
-    #assert pybdsim.Testing.compare_matrix(rmat,ref_rmat)
-
-    te = testdata_store.new_test_entry("02_element/sextupole", __file__, nprimary, 0)
+    te = testdata_store.new_test_entry("02_elements/drift", __file__, nprimary, 0)
     te.add_output_file(os.path.dirname(__file__)+"/"+root_name, "root")
     te.add_output_file(os.path.dirname(__file__)+"/"+optics_name, "optics")
+    te.add_output_parameter("rmat",rmat.tolist())

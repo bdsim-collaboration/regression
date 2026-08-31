@@ -81,7 +81,7 @@ def test(geant4_version, bdsim_version,
     assert(sigma_t_input == pytest.approx(sigma_t_generated,abs=1e-1))
     assert(sigma_energy_input == pytest.approx(sigma_energy_generated,abs=1e-3))
 
-    te = testdata_store.new_test_entry("02_beam/guassmatrix"+"_"+pname, __file__, nprimary, 0)
+    te = testdata_store.new_test_entry("10_beam/guassmatrix"+"_"+pname, __file__, nprimary, 0)
     te.add_input_parameter_dict(params)
 
 

@@ -97,7 +97,7 @@ def test(geant4_version, bdsim_version,
     assert(0 == pytest.approx(sigma_yp_sampler,abs=1e-3))
 
     # store output parameters for regression testing
-    te = testdata_store.new_test_entry("02_beam/reference"+"_"+pname, __file__, nprimary, 0)
+    te = testdata_store.new_test_entry("10_beam/reference"+"_"+pname, __file__, nprimary, 0)
     te.add_input_parameter_dict(params)
     te.add_output_parameter("x_sigma_generated",sigma_x_generated)
     te.add_output_parameter("y_sigma_generated",sigma_y_generated)
