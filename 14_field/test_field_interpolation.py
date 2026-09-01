@@ -48,13 +48,28 @@ FIELD_INTERPOLATION_CASES = [
     ("4d_nearest",   "bmap4d", "bdsim4d", "4dexample.dat", "1.0", "nearest",
      0.0017761945113131978, 0.00035136689967708905, 1.3215959309269466e-05,
      0.0017857934386989697, 0.0003543900315124393, -2.1371774069270798e-05),
-    # NOTE: this 4d_cubic value is under investigation - see conversation notes.
-    # It only matches ~half of the Geant4 versions in the CI matrix (same
-    # underlying value as the plain "4d" case in test_field_tracking.py).
+    # values below are valid for Geant4 >= 11.2.0 - see G4_PRE_11_2_OVERRIDES
     ("4d_cubic",     "bmap4d", "bdsim4d", "4dexample.dat", "1.0", "cubic",
      0.0017761945113131978, 0.00035136689967708905, 1.3215959309269466e-05,
      0.0017857934386989697, 0.0003543900315124393, -2.1371774069270798e-05),
 ]
+
+# Geant4 v11.2.0 changed G4PropagatorInField step-size handling (new
+# fMaxStepSizeMultiplier/fMinBigDistance parameters - see G4 v11.2.0 release
+# notes), which shifts exactly where BDSIM's cubic 4D field interpolator
+# samples the field map. Confirmed identical on Geant4 10.7.4/11.0.4/11.1.3;
+# confirmed matching FIELD_INTERPOLATION_CASES' 4d_cubic values on 11.2+
+# (and identical to test_field_tracking.py's "4d" case, since cubic is
+# BDSIM's default 4D interpolator).
+G4_PRE_11_2_OVERRIDES = {
+    "4d_cubic": (0.0016556805394320657, 0.0002906922050868294, 0.00022163846734898129,
+                 0.0018062131083373385, 0.00038040219503206527, 8.285922579478395e-05),
+}
+
+
+def _g4_pre_11_2(geant4_version):
+    major, minor = (int(x) for x in geant4_version.split(".")[:2])
+    return (major, minor) < (11, 2)
 
 
 @pytest.mark.parametrize(
@@ -100,13 +115,9 @@ def test(geant4_version, bdsim_version,
     sampler_Sigma_yp = sampler_data['yp'].std()
     sampler_mean_y   = sampler_data['y'].mean()
 
-    # TEMPORARY: print all stats unconditionally so a failing assert below
-    # (which aborts the test at the first failure) doesn't hide the values
-    # needed to build geant4_version-conditional expected values.
-    print(f"[{case}] geant4_version={geant4_version!r} "
-          f"Sigma_x={sampler_Sigma_x!r} Sigma_xp={sampler_Sigma_xp!r} "
-          f"mean_x={sampler_mean_x!r} Sigma_y={sampler_Sigma_y!r} "
-          f"Sigma_yp={sampler_Sigma_yp!r} mean_y={sampler_mean_y!r}")
+    if case in G4_PRE_11_2_OVERRIDES and _g4_pre_11_2(geant4_version):
+        (expected_Sigma_x, expected_Sigma_xp, expected_mean_x,
+         expected_Sigma_y, expected_Sigma_yp, expected_mean_y) = G4_PRE_11_2_OVERRIDES[case]
 
     assert pytest.approx(sampler_Sigma_x, rel=1e-3)  == expected_Sigma_x
     assert pytest.approx(sampler_Sigma_xp, rel=1e-3) == expected_Sigma_xp
