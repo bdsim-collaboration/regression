@@ -100,6 +100,14 @@ def test(geant4_version, bdsim_version,
     sampler_Sigma_yp = sampler_data['yp'].std()
     sampler_mean_y   = sampler_data['y'].mean()
 
+    # TEMPORARY: print all stats unconditionally so a failing assert below
+    # (which aborts the test at the first failure) doesn't hide the values
+    # needed to build geant4_version-conditional expected values.
+    print(f"[{case}] geant4_version={geant4_version!r} "
+          f"Sigma_x={sampler_Sigma_x!r} Sigma_xp={sampler_Sigma_xp!r} "
+          f"mean_x={sampler_mean_x!r} Sigma_y={sampler_Sigma_y!r} "
+          f"Sigma_yp={sampler_Sigma_yp!r} mean_y={sampler_mean_y!r}")
+
     assert pytest.approx(sampler_Sigma_x, rel=1e-3)  == expected_Sigma_x
     assert pytest.approx(sampler_Sigma_xp, rel=1e-3) == expected_Sigma_xp
     assert pytest.approx(sampler_mean_x, rel=1e-3)   == expected_mean_x
