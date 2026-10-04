@@ -30,7 +30,7 @@ def test(geant4_version, bdsim_version,
     params[param] = value
 
     pybdsim.Run.RenderGmadJinjaTemplate(template_name,gmad_name,params)
-    pybdsim.Run.Bdsim(gmad_name,base_name,ngenerate,1)
+    assert pybdsim.Run.Bdsim(gmad_name,base_name,ngenerate,1) == 0
     dataPandas = pybdsim.DataPandas.BDSIMOutput(root_name)
 
     # event structure
@@ -54,7 +54,7 @@ def test(geant4_version, bdsim_version,
         if geant4_version == '11.4.2' :
             assert(ntraj == 8899)
             assert(len(t) == 38)
-        # TOOD other geant4 versions
+        # TODO other geant4 versions
 
     data = pybdsim.Data.Load(root_name)
     et = data.GetEventTree()
