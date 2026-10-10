@@ -108,7 +108,7 @@ class test_entry:
     def add_output_temp_file_dict(self, fdict) -> None:
         for k in fdict:
             self.add_output_temp_file(k, fdict[k])
-            
+
     def from_dict(self, d) -> None:
         self.name = d["name"]
         self.file_path = d["file_path"]
@@ -276,28 +276,11 @@ def delete_root_files(path : str) -> None:
             root_file.unlink()
 
 
-def compare_regression_data(paths : dict,
-                            output_path : str = None) -> None :
+def compare_regression_data(path1 : str,
+                            path2 : str = None) -> None :
     '''
     Compare many regression data files
     '''
-
-    # load regression data
-    rd_array = [test_entry_store.new_from_json(paths[k]) for k in paths.keys()]
-
-    # verify test_entry_store lengths
-    rd_lengths = [len(rd) for rd in rd_array]
-
-    print(rd_lengths)
-
-    # verify same tests are in the store
-    for i in range(0, len(rd_array[0])) :
-        name0 = rd_array[0][i].name
-        for j in range(1, len(rd_array)) :
-            if name0 != rd_array[j][i].name :
-                print(f"Test {name0} not present in all regression data")
-
-    pass
 
 def html_regression_data(path1 : str = "./regression_data.dat") -> None :
     pass
