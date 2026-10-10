@@ -79,6 +79,7 @@ class test_entry:
         self.input_parameters = []
         self.output_parameters = []
         self.output_files = []
+        self.output_temp_files = []
 
     def add_input_parameter(self, name : str, value) -> None:
         self.input_parameters.append(test_input_parameter(name, value))
@@ -100,6 +101,13 @@ class test_entry:
     def add_output_file_dict(self, fdict) -> None:
         for k in fdict:
             self.add_output_file(k, fdict[k])
+
+    def add_output_temp_file(self, path : str, type : str) -> None:
+        self.output_temp_files.append(test_output_file(path, type))
+
+    def add_output_temp_file_dict(self, fdict) -> None:
+        for k in fdict:
+            self.add_output_temp_file(k, fdict[k])
             
     def from_dict(self, d) -> None:
         self.name = d["name"]
@@ -121,6 +129,11 @@ class test_entry:
             f.from_dict(v)
             self.output_files.append(f)
 
+        for v in d["output_temp_files"]:
+            f = test_output_file(None, None)
+            f.from_dict(v)
+            self.output_temp_files.append(f)
+
     def to_dict(self):
         d = {
             "name": self.name,
@@ -129,7 +142,8 @@ class test_entry:
             "runtime": self.runtime,
             "input_parameters": [p.to_dict() for p in self.input_parameters],
             "output_parameters": [o.to_dict() for o in self.output_parameters],
-            "output_files": [o.to_dict() for o in self.output_files]
+            "output_files": [o.to_dict() for o in self.output_files],
+            "output_temp_files": [o.to_dict() for o in self.output_temp_files]
         }
         return d
 
@@ -137,7 +151,8 @@ class test_entry:
         s =  f"test_entry(name={self.name}, file_path={self.file_path}, nprimary={self.nprimary}\n"
         s += f"input_parameters={repr(self.input_parameters)}\n"
         s += f"output_parameters={repr(self.output_parameters)}\n"
-        s += f"output_files={repr(self.output_files)})"
+        s += f"output_files={repr(self.output_files)}\n"
+        s += f"output_temp_files={repr(self.output_temp_files)})"
         return s
 
 class test_entry_store:
