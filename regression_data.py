@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import json as _json
 import shutil as _shutil
 from pathlib import Path as _Path
