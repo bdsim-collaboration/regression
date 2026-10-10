@@ -252,6 +252,14 @@ def delete_output_files(file_name : str = "./regression_data.dat") -> None:
             _Path(output_file.path).unlink(missing_ok=True)
 
 
+def delete_root_files(path : str) -> None:
+    '''Recursively delete all files with a .root suffix under path.'''
+    root_path = _Path(path)
+    for root_file in root_path.rglob("*.root"):
+        if root_file.is_file():
+            root_file.unlink()
+
+
 def compare_regression_data(paths : dict,
                             output_path : str = None) -> None :
     '''
@@ -312,6 +320,17 @@ def _build_cli_parser() -> _argparse.ArgumentParser:
         help="Path to regression data JSON file (default: ./regression_data.dat)"
     )
 
+    # delete-root subcommand
+    delete_root_parser = subparsers.add_parser(
+        "delete-root",
+        help="Recursively delete .root files under a directory"
+    )
+    delete_root_parser.add_argument(
+        "path",
+        metavar="PATH",
+        help="Directory to search recursively for .root files"
+    )
+
     return parser
 
 def _parse_key_value(items):
@@ -333,3 +352,5 @@ if __name__ == "__main__":
         copy_regression_data(file_name=args.file, dest_name=args.destination)
     elif args.command == "delete":
         delete_output_files(file_name=args.file)
+    elif args.command == "delete-root":
+        delete_root_files(path=args.path)
