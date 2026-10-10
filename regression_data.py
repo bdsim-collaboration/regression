@@ -259,6 +259,34 @@ def copy_regression_data(file_name : str = "./regression_data.dat",
             output_dest = str(class_path)+'/'+_Path(output.path).parts[-1]
             _shutil.copy2(output.path, output_dest)
 
+def find_entry_in_store(store, name) :
+    for e in store :
+        if e.name == name :
+            return e
+
+def find_input_parameter_in_list(input_parmeters, name) :
+    for p in input_parmeters :
+        if p.name == name :
+            return p
+
+def find_output_parameter_in_list(output_parameters, name) :
+    for o in output_parameters :
+        if o.name == name :
+            return o
+
+def find_output_file_in_list(output_files, name) :
+    for o in output_files :
+        if o.path == name :
+            return o
+
+def compare_input_parameter(input1, input2) :
+    pass
+
+def compare_output_parameter(output1, output2) :
+    pass
+
+def compare_output_file(files1, files2) :
+    pass
 
 def delete_output_files(file_name : str = "./regression_data.dat") -> None:
     '''Delete the files listed in each entry's output_files field.'''
@@ -281,6 +309,39 @@ def compare_regression_data(path1 : str,
     '''
     Compare many regression data files
     '''
+
+    # load test_entry_stores
+    store1 = test_entry_store.new_from_json(path1)
+    store2 = test_entry_store.new_from_json(path2)
+
+    # loop over entries
+    for i, entry1 in enumerate(store1) :
+        entry2 = find_entry_in_store(store2, entry1.name)
+        if not entry2 :
+            continue
+
+        # check if input parameters match
+        for j, input1 in enumerate(entry1.input_parameters):
+            input2 = find_input_parameter_in_list(entry1.input_parameters, input1.name)
+            if not input2 :
+                continue
+
+            compare_input_parameter(input1,input2)
+
+        # check if output parameters match
+        for j, output1 in enumerate(entry1.output_parameters):
+            output2 = find_output_parameter_in_list(entry1.output_parameters, output1.name)
+            if not output2 :
+                continue
+            compare_output_parameter(output1, output2)
+
+        # compare output files
+        for j, output_file1, in enumerate(entry1.output_files):
+            output_file2 = find_output_file_in_list(entry1.output_files, output_file1.path)
+            if not output_file2 :
+                continue
+            compare_output_file(output_file1, output_file2)
+
 
 def html_regression_data(path1 : str = "./regression_data.dat") -> None :
     pass
