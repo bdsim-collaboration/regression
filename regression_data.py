@@ -244,6 +244,14 @@ def copy_regression_data(file_name : str = "./regression_data.dat",
             _shutil.copy2(output.path, output_dest)
 
 
+def delete_output_files(file_name : str = "./regression_data.dat") -> None:
+    '''Delete the files listed in each entry's output_files field.'''
+    entries = test_entry_store.new_from_json(file_name)
+    for entry in entries:
+        for output_file in entry.output_files:
+            _Path(output_file.path).unlink(missing_ok=True)
+
+
 def compare_regression_data(paths : dict,
                             output_path : str = None) -> None :
     '''
@@ -292,6 +300,18 @@ def _build_cli_parser() -> _argparse.ArgumentParser:
         help="Destination directory (default: ../regression_data/data/os-g4v/)"
     )
 
+    # delete subcommand
+    delete_parser = subparsers.add_parser(
+        "delete",
+        help="Delete output files listed in a regression data JSON file"
+    )
+    delete_parser.add_argument(
+        "--file",
+        default="./regression_data.dat",
+        metavar="FILE",
+        help="Path to regression data JSON file (default: ./regression_data.dat)"
+    )
+
     return parser
 
 def _parse_key_value(items):
@@ -311,3 +331,5 @@ if __name__ == "__main__":
     args = parser.parse_args()
     if args.command == "copy":
         copy_regression_data(file_name=args.file, dest_name=args.destination)
+    elif args.command == "delete":
+        delete_output_files(file_name=args.file)
