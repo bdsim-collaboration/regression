@@ -289,16 +289,8 @@ def copy_regression_data(file_name : str = "./regression_data.dat",
     if not dest_path.exists():
         dest_path.mkdir(parents=True)
 
-    # copy regressiondata.dat over to target
-    _shutil.copy2(file_name, dest_path)
 
     # loop over files
-    tes = test_entry_store.new_from_json(file_name)
-
-    if export_html:
-        html_regression_data(path1=file_name,
-                             output_path=dest_name+"/"+_Path(file_name).stem+".html")
-
     for te in tes :
         test_class = te.name.split('/')[0]
         class_path = _Path(dest_name+'/'+test_class+'/')
@@ -312,6 +304,13 @@ def copy_regression_data(file_name : str = "./regression_data.dat",
             output_dest = str(class_path)+'/'+_Path(output.path).parts[-1]
             _shutil.copy2(output.path, output_dest)
 
+    # Write the regression data store into the destination, preserving the
+    # input file's name.
+    tes.write_json(str(dest_path / _Path(file_name).name))
+
+    if export_html:
+        html_regression_data(path1=file_name,
+                             output_path=dest_name+"/"+_Path(file_name).stem+".html")
 def compare_input_parameter(input1, input2) :
     pass
 
