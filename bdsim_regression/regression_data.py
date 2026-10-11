@@ -275,7 +275,8 @@ class test_entry_store:
         return s
 
 def copy_regression_data(file_name : str = "./regression_data.dat",
-                         dest_name : str = "./regression_data_store/") -> None :
+                         dest_name : str = "./regression_data_store/",
+                         export_html : bool = False) -> None :
     '''
     Copy files documented in file_name to destination
     '''
@@ -293,6 +294,10 @@ def copy_regression_data(file_name : str = "./regression_data.dat",
 
     # loop over files
     tes = test_entry_store.new_from_json(file_name)
+
+    if export_html:
+        html_regression_data(path1=file_name,
+                             output_path=dest_name+"/"+_Path(file_name).stem+".html")
 
     for te in tes :
         test_class = te.name.split('/')[0]
@@ -533,6 +538,11 @@ def _build_cli_parser() -> _argparse.ArgumentParser:
         metavar="DEST",
         help="Destination directory (default: ../regression_data/data/html/)"
     )
+    copy_parser.add_argument(
+        "--html",
+        action="store_true",
+        help="Also write regression_data.html beside the input JSON file"
+    )
     html_parser = subparsers.add_parser(
         "html",
         help="Render a regression-data JSON file as an HTML page"
@@ -599,7 +609,11 @@ def main() -> None:
     parser = _build_cli_parser()
     args = parser.parse_args()
     if args.command == "copy":
-        copy_regression_data(file_name=args.file, dest_name=args.destination)
+        copy_regression_data(
+            file_name=args.file,
+            dest_name=args.destination,
+            export_html=args.html,
+        )
     elif args.command == "delete":
         delete_output_files(file_name=args.file)
     elif args.command == "delete-root":
