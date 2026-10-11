@@ -130,6 +130,18 @@ class test_entry:
                 return output_file
         return None
 
+    def change_paths(self, new_path: str) -> None:
+        """Move this entry's test and output paths under ``new_path``."""
+        def relocated(path: str) -> str:
+            original = _Path(path)
+            return str(_Path(new_path) / original.parent.name / original.name)
+
+        if self.file_path:
+            self.file_path = relocated(self.file_path)
+        for output_file in self.output_files:
+            if output_file.path:
+                output_file.path = relocated(output_file.path)
+
     def from_dict(self, d) -> None:
         self.name = d["name"]
         self.file_path = d["file_path"]
@@ -176,6 +188,7 @@ class test_entry:
         s += f"output_temp_files={repr(self.output_temp_files)})"
         return s
 
+
 class test_entry_store:
     '''
     Class to store many test_entries (similar API to list)
@@ -201,6 +214,11 @@ class test_entry_store:
 
     def append(self, entry : test_entry) -> None:
         self.entries.append(entry)
+
+    def change_paths(self, new_path: str) -> None:
+        """Change paths for every test entry in the store."""
+        for entry in self.entries:
+            entry.change_paths(new_path)
 
     def __len__(self) -> int:
         return len(self.entries)
