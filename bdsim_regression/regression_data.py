@@ -394,19 +394,14 @@ def html_regression_data(path1 : str = "./regression_data.dat",
             with thead():
                 with tr():
                     for heading in (
-                        "Test", "Test file", "Primary particles", "Runtime (s)",
+                        "Test", "Primary particles", "Runtime (s)",
                         "Input parameters", "Output parameters", "Output files",
                     ):
                         th(heading)
             with tbody():
                 for entry in store:
                     with tr():
-                        td(entry.name or "Unnamed test")
                         test_file_path = _Path(entry.file_path) if entry.file_path else None
-                        test_file = (
-                            "/".join(test_file_path.parts[-2:])
-                            if test_file_path else ""
-                        )
                         if test_file_path:
                             test_file_target = (
                                 test_file_path
@@ -417,9 +412,9 @@ def html_regression_data(path1 : str = "./regression_data.dat",
                                 test_file_target,
                                 start=output_path.parent,
                             )
-                            td(a(test_file, href=_urlquote(relative_target, safe="/")))
+                            td(a(entry.name or "Unnamed test", href=_urlquote(relative_target, safe="/")))
                         else:
-                            td(test_file)
+                            td(entry.name or "Unnamed test")
                         td("" if entry.nprimary is None else str(entry.nprimary))
                         td("" if entry.runtime is None else f"{entry.runtime:.3f}")
 
