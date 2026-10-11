@@ -300,6 +300,9 @@ def copy_regression_data(file_name : str = "./regression_data.dat",
         if not class_path.exists():
             class_path.mkdir(parents=True)
 
+        test_file_dest = class_path / _Path(te.file_path).name
+        _shutil.copy2(te.file_path, test_file_dest)
+
         for output in te.output_files :
             output_dest = str(class_path)+'/'+_Path(output.path).parts[-1]
             _shutil.copy2(output.path, output_dest)
@@ -530,7 +533,6 @@ def _build_cli_parser() -> _argparse.ArgumentParser:
         metavar="DEST",
         help="Destination directory (default: ../regression_data/data/html/)"
     )
-
     html_parser = subparsers.add_parser(
         "html",
         help="Render a regression-data JSON file as an HTML page"
