@@ -289,7 +289,6 @@ def copy_regression_data(file_name : str = "./regression_data.dat",
     if not dest_path.exists():
         dest_path.mkdir(parents=True)
 
-
     # loop over files
     for te in tes :
         test_class = te.name.split('/')[0]
@@ -304,12 +303,15 @@ def copy_regression_data(file_name : str = "./regression_data.dat",
             output_dest = str(class_path)+'/'+_Path(output.path).parts[-1]
             _shutil.copy2(output.path, output_dest)
 
+    # change the paths
+    tes.change_paths("./")
+
     # Write the regression data store into the destination, preserving the
     # input file's name.
     tes.write_json(str(dest_path / _Path(file_name).name))
 
     if export_html:
-        html_regression_data(path1=file_name,
+        html_regression_data(path1=tes,
                              output_path=dest_name+"/"+_Path(file_name).stem+".html")
 def compare_input_parameter(input1, input2) :
     pass
@@ -375,29 +377,35 @@ def compare_regression_data(path1 : str,
             compare_output_file(output_file1, output_file2)
 
 
-def html_regression_data(path1 : str = "./regression_data.dat",
+def html_regression_data(path1 : str | test_entry_store = "./regression_data.dat",
                         output_path : str = None) -> _Path :
-    '''Render a regression-data JSON file as a standalone HTML page.
+    '''Render regression data as a standalone HTML page.
 
     Requires the third-party ``dominate`` package.  The generated page is
-    written to ``regression_data.html`` alongside the JSON file.
+    written to ``regression_data.html`` alongside the JSON file, or in the
+    current directory when a store is provided directly.
     '''
     import dominate
     from dominate.tags import (
         a, details, h1, li, meta, p, summary, table, tbody, td, th, thead, tr, ul,
     )
 
-    source = _Path(path1)
+    source = None if isinstance(path1, test_entry_store) else _Path(path1)
     output_path = (
         _Path(output_path)
         if output_path is not None
-        else source.with_name("regression_data.html")
+        else (source.with_name("regression_data.html") if source else _Path("regression_data.html"))
     )
-    store = test_entry_store.new_from_json(source)
+    store = path1 if source is None else test_entry_store.new_from_json(source)
+    # Paths in an in-memory store are relative to the directory where its
+    # accompanying HTML will be written (for example, after copy_regression_data
+    # relocates entries into the export directory).
+    source_parent = source.parent if source else output_path.parent
+    source_name = source.name if source else "Regression data store"
     generated_at = _datetime.now().astimezone().strftime(
         "%A, %d %B %Y at %I:%M:%S %p %Z"
     )
-    document_title = f"{source.name} - {generated_at}"
+    document_title = f"{source_name} - {generated_at}"
     document = dominate.document(title=document_title)
 
     with document:
@@ -421,7 +429,7 @@ def html_regression_data(path1 : str = "./regression_data.dat",
 
         h1("Regression tests")
         p(f"Generated: {generated_at}", id="generated-at")
-        p(f"Input file: {source.resolve()}", id="input-file")
+        p(f"Input file: {source.resolve() if source else source_name}", id="input-file")
         dominate.tags.label("Search tests: ", for_="test-search")
         dominate.tags.input_(id="test-search", type="search", placeholder="Filter by test name")
         with table(id="regression-tests"):
@@ -445,7 +453,7 @@ def html_regression_data(path1 : str = "./regression_data.dat",
                             test_file_target = (
                                 test_file_path
                                 if test_file_path.is_absolute()
-                                else source.parent / test_file_path
+                                else source_parent / test_file_path
                             )
                             relative_target = _os.path.relpath(
                                 test_file_target,
