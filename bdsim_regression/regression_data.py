@@ -394,13 +394,14 @@ def html_regression_data(path1 : str = "./regression_data.dat",
             with thead():
                 with tr():
                     for heading in (
-                        "Test", "Primary particles", "Runtime (s)",
+                        "Index", "Test", "Primary particles", "Runtime (s)",
                         "Input parameters", "Output parameters", "Output files",
                     ):
                         th(heading)
             with tbody():
-                for entry in store:
+                for index, entry in enumerate(store, start=1):
                     with tr():
+                        td(str(index))
                         test_file_path = _Path(entry.file_path) if entry.file_path else None
                         if test_file_path:
                             test_file_target = (
