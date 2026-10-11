@@ -4,6 +4,7 @@ import shutil as _shutil
 from pathlib import Path as _Path
 import argparse as _argparse
 import os as _os
+from datetime import datetime as _datetime
 from urllib.parse import quote as _urlquote
 
 
@@ -358,7 +359,7 @@ def html_regression_data(path1 : str = "./regression_data.dat",
     '''
     import dominate
     from dominate.tags import (
-        a, details, h1, li, meta, summary, table, tbody, td, th, thead, tr, ul,
+        a, details, h1, li, meta, p, summary, table, tbody, td, th, thead, tr, ul,
     )
 
     source = _Path(path1)
@@ -368,7 +369,11 @@ def html_regression_data(path1 : str = "./regression_data.dat",
         else source.with_name("regression_data.html")
     )
     store = test_entry_store.new_from_json(source)
-    document = dominate.document(title="Regression tests")
+    generated_at = _datetime.now().astimezone().strftime(
+        "%A, %d %B %Y at %I:%M:%S %p %Z"
+    )
+    document_title = f"{source.name} - {generated_at}"
+    document = dominate.document(title=document_title)
 
     with document:
         with document.head:
@@ -390,14 +395,22 @@ def html_regression_data(path1 : str = "./regression_data.dat",
             )
 
         h1("Regression tests")
-        with table():
+        p(f"Generated: {generated_at}", id="generated-at")
+        p(f"Input file: {source.resolve()}", id="input-file")
+        dominate.tags.label("Search tests: ", for_="test-search")
+        dominate.tags.input_(id="test-search", type="search", placeholder="Filter by test name")
+        with table(id="regression-tests"):
             with thead():
                 with tr():
                     for heading in (
                         "Index", "Test", "Primary particles", "Runtime (s)",
                         "Input parameters", "Output parameters", "Output files",
                     ):
-                        th(heading)
+                        if heading == "Test":
+                            th(heading, id="test-heading", role="button", tabindex="0",
+                               title="Sort by test name")
+                        else:
+                            th(heading)
             with tbody():
                 for index, entry in enumerate(store, start=1):
                     with tr():
@@ -448,6 +461,32 @@ def html_regression_data(path1 : str = "./regression_data.dat",
                                             li(a(output_name, href=relative_path.as_posix()))
                                         else:
                                             li("Unnamed file")
+
+        dominate.tags.script(
+            dominate.util.raw(
+                "const testSearch=document.getElementById('test-search');"
+                "const testTable=document.getElementById('regression-tests');"
+                "const testBody=testTable.tBodies[0];"
+                "testSearch.addEventListener('input',()=>{"
+                "const query=testSearch.value.trim().toLocaleLowerCase();"
+                "for(const row of testBody.rows){"
+                "row.hidden=!row.cells[1].textContent.toLocaleLowerCase().includes(query);"
+                "}});"
+                "const testHeading=document.getElementById('test-heading');"
+                "let ascending=true;"
+                "function sortTests(){"
+                "const rows=Array.from(testBody.rows);"
+                "rows.sort((left,right)=>{"
+                "const comparison=left.cells[1].textContent.localeCompare(right.cells[1].textContent,undefined,{numeric:true,sensitivity:'base'});"
+                "return ascending?comparison:-comparison;});"
+                "ascending=!ascending;"
+                "for(const row of rows)testBody.appendChild(row);"
+                "}"
+                "testHeading.addEventListener('click',sortTests);"
+                "testHeading.addEventListener('keydown',event=>{"
+                "if(event.key==='Enter'||event.key===' '){event.preventDefault();sortTests();}});"
+            )
+        )
 
     output_path.write_text(str(document), encoding="utf-8")
     return output_path
