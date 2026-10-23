@@ -1,0 +1,21 @@
+import os
+import pytest
+import pybdsim
+from pathlib import Path
+
+def test(test_length, testlength_primaries, testdata_store):
+
+    os.chdir(Path(__file__).resolve().parent)
+
+    base_name   = "lhara_stage1"
+    gmad_name   = "./04_lhara_stage1/LhARA_S1.gmad"
+    root_name   = base_name + ".root"
+    optics_name = base_name + "_optics.root"
+
+    nprimary = testlength_primaries.get_nprimary(__file__, test_length)
+
+    sproc, timing = pybdsim.Run.Bdsim(gmad_name, base_name, nprimary, seed=1, returnTiming=True)
+    pybdsim.Run.RebdsimOptics(root_name, optics_name, emittanceOnTheFly=True)
+
+    te = testdata_store.new_test_entry("99_machines/lhara_stage1", __file__, nprimary, timing)
+    te.add_output_file(os.path.dirname(__file__)+"/"+optics_name, "optics")

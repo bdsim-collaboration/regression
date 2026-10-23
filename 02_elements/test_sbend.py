@@ -331,12 +331,12 @@ def run_fint_second_order_consistency_test(
     data_fint["FINTK2"] = fintK2
     data_fint["FINTXK2"] = fintxK2
 
-    base_name_zero = base_name + "_zero"
+    base_name_zero = f"{base_name}_{result_prefix}_zero"
     gmad_name_zero = base_name_zero + ".gmad"
     root_name_zero = base_name_zero + ".root"
     optics_name_zero = base_name_zero + "_optics.root"
 
-    base_name_fint = base_name + "_fint"
+    base_name_fint = f"{base_name}_{result_prefix}_fint"
     gmad_name_fint = base_name_fint + ".gmad"
     root_name_fint= base_name_fint + ".root"
     optics_name_fint = base_name_fint + "_optics.root"
