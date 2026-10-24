@@ -11,6 +11,7 @@ class AnalysisClass(pybdsim.RootEventAnalysis.RootEventAnalyser) :
     def init(self):
         self.photon_energy = []
         self.photon_angle  = []
+        self.histograms    = {}
 
     def process(self) :
         for itraj in range(0, self.event.Trajectory.n, 1):
@@ -28,11 +29,13 @@ class AnalysisClass(pybdsim.RootEventAnalysis.RootEventAnalyser) :
         ybins = numpy.linspace(self.photon_angle.min(), self.photon_angle.max(), 50)
         counts, xedges, yedges = numpy.histogram2d(self.photon_energy, self.photon_angle, bins=[xbins,ybins])  # angle in mrad
 
-        self.add_persistent_data("photon_energy_angle", {"contents": counts,
-                                                         "xedges": xedges,
-                                                         "yedges": yedges,
-                                                         "xlabel": "photon_energy",
-                                                         "ylabel": "photon_angle"})
+        self.histograms["photon_energy_angle"] = {"type": "histo2d",
+                                                  "contents": counts,
+                                                  "xedges": xedges,
+                                                  "yedges": yedges,
+                                                  "xlabel": "photon_energy",
+                                                  "ylabel": "photon_angle"}
+        self.add_persistent_data("histograms",self.histograms)
 
 
 def analysis(file_name  = None) :

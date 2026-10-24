@@ -68,7 +68,7 @@ def test(geant4_version, bdsim_version,
     ac.write_persistent_data(json_name)
 
     # delete root files
-    Path(root_name).unlink()
+    # Path(root_name).unlink()
 
     # store test output
     te = testdata_store.new_test_entry("22_processes/electron_" + pname, __file__, nprimary, timing)
