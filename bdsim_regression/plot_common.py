@@ -9,7 +9,7 @@ def two_factors(n):
         if n % a == 0:
             return a, n // a
 
-def figure(nrow, ncol, shared_xaxes = False, shared_yaxes = True) :
+def figure(nrow, ncol, shared_xaxes = False, shared_yaxes = False) :
     fig = make_subplots(rows=nrow, cols=ncol, shared_xaxes = shared_xaxes, shared_yaxes = shared_yaxes)
 
     return fig

@@ -14,36 +14,62 @@ def compare(json_file1, json_file2, show = False, file_name = "comparison_json.h
     hist_dict2 = json_dict2['histograms']
 
     if len(hist_dict1) != len(hist_dict2):
-        raise Exception("Histogram length do not match")
+        print("Histogram length do not match")
+
+    # all histograms
+    hist_set = set()
+    hist_set |= set(hist_dict1.keys())
+    hist_set |= set(hist_dict2.keys())
+    hist_set = list(hist_set)
+    hist_set.sort()
 
     # number of columns and rows
-    nrow, ncol = two_factors(len(hist_dict1))
+    nrow, ncol = two_factors(len(hist_set))
+    print(nrow, ncol)
 
     # create figure
     fig = figure(nrow, ncol)
 
     # loop over histograms
-    for ihist, hist in enumerate(hist_dict1):
+    for ihist, hist in enumerate(hist_set):
         icol = ihist % ncol
         irow = int((ihist - icol)/nrow)
+        print(hist, icol, irow)
 
         icol = icol + 1
         irow = irow + 1
-        if hist_dict1[hist]['type'] == "histo1d":
-            t1 = hist1d(hist_dict1[hist], hist)
-            t2 = hist1d(hist_dict2[hist], hist)
-        elif hist_dict1[hist]['type'] == "bar1d" :
-            t1 = bar1d(hist_dict1[hist], hist, x_as_string=True)
-            t2 = bar1d(hist_dict2[hist], hist, x_as_string=True)
 
-        fig.add_trace(t1, row=irow, col=icol)
-        fig.add_trace(t2, row=irow, col=icol)
+        h1 = None
+        h2 = None
+        if hist in hist_dict1 :
+            h1 = hist_dict1[hist]
+        if hist in hist_dict2 :
+            h2 = hist_dict2[hist]
 
-        fig.update_xaxes(title_text=hist_dict1[hist]['xlabel'], row=irow, col=icol)
-        if "yscale" in hist_dict1[hist] :
-            fig.update_yaxes(type=hist_dict1[hist]['yscale'], row=irow, col=icol)
+        if h1 != None :
+            if h1['type'] == "histo1d" :
+                t1 = hist1d(hist_dict1[hist], hist)
+            elif h1['type'] == "bar1d" :
+                t1 = bar1d(hist_dict1[hist], hist, x_as_string=True)
+            fig.add_trace(t1, row=irow, col=icol)
 
-    # fig.update_layout(template="plotly_white")
+        if h2 != None :
+            if h2['type'] == "histo1d" :
+                t2 = hist1d(hist_dict2[hist], hist)
+            elif h2['type'] == "bar1d" :
+                t2 = bar1d(hist_dict2[hist], hist, x_as_string=True)
+            fig.add_trace(t2, row=irow, col=icol)
+
+        if h1 != None :
+            fig.update_xaxes(title_text=h1['xlabel'], row=irow, col=icol)
+            if "yscale" in h1 :
+                fig.update_yaxes(type=h1['yscale'], row=irow, col=icol)
+        if h2 != None :
+            fig.update_xaxes(title_text=h2['xlabel'], row=irow, col=icol)
+            if "yscale" in h2 :
+                fig.update_yaxes(type=h2['yscale'], row=irow, col=icol)
+
+    fig.update_layout(template="plotly_white")
     if show :
         fig.show()
 
@@ -102,5 +128,5 @@ def hist2d(histDict,
                       # colorscale="Viridis",
                       # name=name
     )
-    
+
     return
