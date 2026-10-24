@@ -89,3 +89,18 @@ def hist1d(histDict,
     )
 
     return sca
+
+def hist2d(histDict,
+           name = "data") :
+    xedges = np.array(histDict['xedges'])
+    yedges = np.array(histDict['yedges'])
+    contents = np.array(histDict['contents'])
+
+    return go.Heatmap(x=0.5 * (xedges[:-1] + xedges[1:]),  # bin centres
+                      y=0.5 * (yedges[:-1] + yedges[1:]),
+                      z=contents.T,  # transpose: histogram2d is indexed [x, y], heatmap wants [y, x]
+                      # colorscale="Viridis",
+                      # name=name
+    )
+    
+    return
