@@ -37,6 +37,33 @@ def bdsimParserSetup_fromEmpty():
 
     return 0
 
+def bdsimParserSetup_withGDML():
+    import bdsim
+
+    p = bdsim.BDSParser()
+
+    b = p.GetBeam()
+    b['particle'] = 'e-'
+    b['energy'] = 1.0
+    b['distrType'] = 'reference'
+
+    o = p.GetOptions()
+    o['batch'] = True
+    o['outputFormat'] = 'none'
+
+    placement = p.GetGlobal_Placement()
+    placement['name'] = 'p1'
+    placement['geometryFile'] = 'gdml:bindingsGeometry.gdml'
+    placement['x'] = 0.3
+    placement['z'] = 0.5
+    p.Add_Placement()
+
+    application = bdsim.BDSIM(p)
+    assert application.Initialised()
+    assert application.InitialisationResult() == 0
+
+    return 0
+
 def bdsimParserAccessors() :
     import bdsim
 
@@ -677,6 +704,14 @@ def test_bdsimSetup_fromEmpty(testdata_store, make_bdsim_test_code, run_bdsim_te
     code_to_run = make_bdsim_test_code(bdsimParserSetup_fromEmpty, args="", dir=os.path.dirname(os.path.abspath(__file__)))
     output = run_bdsim_test_code_as_subprocess(code_to_run)
     te = testdata_store.new_test_entry("25_python/bdsimSetup_fromEmpty", __file__, -1, -1)
+
+def test_bdsimSetup_withGDML(testdata_store, make_bdsim_test_code, run_bdsim_test_code_as_subprocess) :
+    os.chdir(Path(__file__).resolve().parent)
+    code_to_run = make_bdsim_test_code(bdsimParserSetup_withGDML, args="", dir=os.path.dirname(os.path.abspath(__file__)))
+    output = run_bdsim_test_code_as_subprocess(code_to_run)
+    te = testdata_store.new_test_entry("25_python/bdsimSetup_withGDML", __file__, -1, -1)
+    te.add_input_parameter("geometry_file", "bindingsGeometry.gdml")
+    te.add_output_parameter("gdml_loaded", True)
 
 
 def test_bdsimParserAccessors(testdata_store, make_bdsim_test_code, run_bdsim_test_code_as_subprocess) :
