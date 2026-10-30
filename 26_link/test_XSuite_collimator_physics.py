@@ -9,6 +9,7 @@ compare Xcoll before and after changes to BDSLink.
 
 from __future__ import annotations
 
+import importlib
 import json
 from pathlib import Path
 from time import perf_counter
@@ -129,6 +130,8 @@ def _ensure_geant4_interface() -> None:
     """Compile the Xcoll bridge once when it is not already available."""
     if not xc.geant4.interface.compiled:
         xc.geant4.interface.compile(verbose=True)
+        importlib.invalidate_caches()
+        importlib.import_module("g4interface")
     assert xc.geant4.interface.ready
 
 
