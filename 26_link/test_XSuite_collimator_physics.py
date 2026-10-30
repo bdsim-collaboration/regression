@@ -9,6 +9,7 @@ compare Xcoll before and after changes to BDSLink.
 
 from __future__ import annotations
 
+import importlib
 import json
 from pathlib import Path
 from time import perf_counter
@@ -16,12 +17,22 @@ from typing import Any
 
 import numpy as np
 import pytest
-import xcoll as xc
-import xpart as xp
-import xtrack as xt
+
+try:
+    import xcoll as xc
+    import xpart as xp
+    import xtrack as xt
+except ImportError as error:
+    xc = None
+    xp = None
+    xt = None
+    XSUITE_IMPORT_ERROR = error
+else:
+    XSUITE_IMPORT_ERROR = None
 
 
-pytestmark = pytest.mark.xfail(reason="requires bdsim and the Xcoll Geant4 interface")
+pytestmark = pytest.mark.xfail(reason="requires Xsuite and the Xcoll Geant4 interface")
+
 
 NPRIMARY = 2_000
 P0C = 7e12
@@ -131,6 +142,8 @@ def _ensure_geant4_interface() -> None:
     """Compile the Xcoll bridge once when it is not already available."""
     if not xc.geant4.interface.compiled:
         xc.geant4.interface.compile(verbose=True)
+        importlib.invalidate_caches()
+        importlib.import_module("g4interface")
     assert xc.geant4.interface.ready
 
 
@@ -161,6 +174,9 @@ def test_xcoll_collimator_physics(
     tilt: float,
 ) -> None:
     """Track the same proton beam through each material/aperture case."""
+    if XSUITE_IMPORT_ERROR is not None:
+        pytest.fail(f"Xsuite is unavailable: {XSUITE_IMPORT_ERROR}")
+
     _ensure_geant4_interface()
 
     tilt_name = "tilted" if tilt else "parallel"
@@ -217,7 +233,9 @@ def test_xcoll_collimator_physics(
         summary["configuration"]["tip_thickness"] = TIP_THICKNESS
 
     output_path = Path(__file__).parent / f"xcoll_{case_name}.json"
-    output_path.write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n")
+    output_path.write_text(
+        json.dumps(summary["result"], indent=2, sort_keys=True) + "\n"
+    )
 
     if aperture_name == "open" and not tilt:
         assert 900 < summary["result"]["primary_alive"] < 1200
