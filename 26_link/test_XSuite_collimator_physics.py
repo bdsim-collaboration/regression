@@ -21,8 +21,6 @@ import xpart as xp
 import xtrack as xt
 
 
-pytestmark = pytest.mark.xfail(reason="requires bdsim and the Xcoll Geant4 interface")
-
 NPRIMARY = 2_000
 P0C = 7e12
 COLLIMATOR_LENGTH = 0.6
@@ -217,7 +215,9 @@ def test_xcoll_collimator_physics(
         summary["configuration"]["tip_thickness"] = TIP_THICKNESS
 
     output_path = Path(__file__).parent / f"xcoll_{case_name}.json"
-    output_path.write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n")
+    output_path.write_text(
+        json.dumps(summary["result"], indent=2, sort_keys=True) + "\n"
+    )
 
     if aperture_name == "open" and not tilt:
         assert 900 < summary["result"]["primary_alive"] < 1200
