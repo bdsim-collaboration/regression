@@ -37,6 +37,35 @@ def bdsimParserSetup_fromEmpty():
 
     return 0
 
+def bdsimParserSetup_withGDML(output_name):
+    import bdsim
+
+    p = bdsim.BDSParser()
+
+    b = p.GetBeam()
+    b['particle'] = 'e-'
+    b['energy'] = 1.0
+    b['distrType'] = 'reference'
+
+    o = p.GetOptions()
+    o['batch'] = True
+    o['outputFormat'] = 'rootevent'
+    o['outputFileName'] = output_name
+    o['physicsList'] = 'em'
+
+    placement = p.GetGlobal_Placement()
+    placement['name'] = 'p1'
+    placement['geometryFile'] = 'gdml:bindingsGeometry.gdml'
+    placement['z'] = 0.5
+    p.Add_Placement()
+
+    application = bdsim.BDSIM(p)
+    assert application.Initialised()
+    assert application.InitialisationResult() == 0
+    application.BeamOn(100)
+
+    return 0
+
 def bdsimParserAccessors() :
     import bdsim
 
@@ -677,6 +706,63 @@ def test_bdsimSetup_fromEmpty(testdata_store, make_bdsim_test_code, run_bdsim_te
     code_to_run = make_bdsim_test_code(bdsimParserSetup_fromEmpty, args="", dir=os.path.dirname(os.path.abspath(__file__)))
     output = run_bdsim_test_code_as_subprocess(code_to_run)
     te = testdata_store.new_test_entry("25_python/bdsimSetup_fromEmpty", __file__, -1, -1)
+
+def test_bdsimSetup_withGDML(testdata_store, make_bdsim_test_code, run_bdsim_test_code_as_subprocess, tmp_path) :
+    import awkward as ak
+    import numpy as np
+    import uproot
+
+    os.chdir(Path(__file__).resolve().parent)
+    output_name = tmp_path / "bindings_gdml"
+    code_to_run = make_bdsim_test_code(
+        bdsimParserSetup_withGDML,
+        args=repr(str(output_name)),
+        dir=os.path.dirname(os.path.abspath(__file__)),
+    )
+    output = run_bdsim_test_code_as_subprocess(code_to_run)
+
+    event_tree = uproot.open(str(output_name) + ".root")["Event"]
+    first_hit_energy = ak.to_numpy(
+        ak.fill_none(
+            ak.firsts(
+                event_tree[
+                    "PrimaryFirstHit./PrimaryFirstHit.preStepKineticEnergy"
+                ].array(library="ak")
+            ),
+            np.nan,
+        )
+    )
+    last_hit_energy = ak.to_numpy(
+        ak.fill_none(
+            ak.firsts(
+                event_tree[
+                    "PrimaryLastHit./PrimaryLastHit.preStepKineticEnergy"
+                ].array(library="ak")
+            ),
+            np.nan,
+        )
+    )
+    interacted = np.isfinite(first_hit_energy) & np.isfinite(last_hit_energy)
+    energy_loss = first_hit_energy[interacted] - last_hit_energy[interacted]
+
+    n_interacted = int(np.count_nonzero(interacted))
+    n_energy_loss = int(np.count_nonzero(energy_loss > 0))
+    mean_first_hit_energy = float(np.mean(first_hit_energy[interacted]))
+    mean_last_hit_energy = float(np.mean(last_hit_energy[interacted]))
+    mean_energy_loss = float(np.mean(energy_loss))
+
+    assert n_interacted == 100
+    assert n_energy_loss > 90
+    assert mean_energy_loss > 0.1
+
+    te = testdata_store.new_test_entry("25_python/bdsimSetup_withGDML", __file__, 100, -1)
+    te.add_input_parameter("geometry_file", "bindingsGeometry.gdml")
+    te.add_output_parameter("gdml_loaded", True)
+    te.add_output_parameter("primaries_interacting", n_interacted)
+    te.add_output_parameter("primaries_losing_energy", n_energy_loss)
+    te.add_output_parameter("mean_first_hit_kinetic_energy_GeV", mean_first_hit_energy)
+    te.add_output_parameter("mean_last_hit_kinetic_energy_GeV", mean_last_hit_energy)
+    te.add_output_parameter("mean_primary_energy_loss_GeV", mean_energy_loss)
 
 
 def test_bdsimParserAccessors(testdata_store, make_bdsim_test_code, run_bdsim_test_code_as_subprocess) :
