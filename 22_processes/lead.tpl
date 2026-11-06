@@ -13,7 +13,7 @@ beam, particle="ion 208 82",
       kineticEnergy={{ BEAM_ENERGY }}*GeV,
       distrType="reference";
 
-option, physicsList = "g4FTFP_BERT ion",
+option, physicsList = "ftfp_bert ion",
         worldMaterial="G4_Galactic",
         beampipeMaterial="G4_Galactic",
         physicsVerbose=1;
