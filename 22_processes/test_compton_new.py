@@ -1,0 +1,29 @@
+import pytest
+import pybdsim
+import os
+from pathlib import Path
+
+import compton_new_analysis
+
+def test(geant4_version, bdsim_version,
+         test_length, testlength_primaries, testdata_store) :
+
+    os.chdir(Path(__file__).resolve().parent)
+
+    base_name     = "compton_new"
+    template_name = base_name + ".tpl"
+    gmad_name     = base_name+".gmad"
+    root_name     = base_name+".root"
+    json_name     = base_name+".json"
+
+    params = {}
+    
+    nprimary = testlength_primaries.get_nprimary(__file__,test_length)
+    pybdsim.Run.RenderGmadJinjaTemplate(template_name,gmad_name,params)
+    sproc, timing = pybdsim.Run.Bdsim(gmad_name, base_name, ngenerate=nprimary, seed=1, returnTiming=True)
+
+    ac = compton_new_analysis.analysis(root_name)
+    ac.write_persistent_data("compton_new.json")
+
+    te = testdata_store.new_test_entry("22_processes/compton_new", __file__, nprimary, timing)
+    te.add_output_file(os.path.dirname(__file__)+"/"+json_name, "json")

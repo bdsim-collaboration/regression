@@ -89,6 +89,7 @@ class test_nprimary :
                          "22_processes/test_laserwire_compton_cumulative":{"short":10000,"medium":10000,"long":10000},
                          "22_processes/test_laserwire_compton_multiStep": {"short": 10000, "medium": 10000,"long": 10000},
                          "22_processes/test_synch_rad": {"short": 10000, "medium": 100000,"long": 1000000},
+                         "22_processes/test_compton_new": {"short": 100, "medium": 1000, "long": 10000},
                          "99_machines/test_atf2":{"short":5000,"medium":10000,"long":10000},
                          "99_machines/test_diamond":{"short":1,"medium":10000,"long":10000},
                          "99_machines/test_lhc":{"short":1,"medium":10000,"long":10000},
