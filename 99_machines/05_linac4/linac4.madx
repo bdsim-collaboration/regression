@@ -1,0 +1,198 @@
+/*****************************************************
+ *
+ * MADX file for the L4T line from LINAC4 to LINAC2
+ *
+ * Directory: /afs/cern.ch/eng/ps/cps/TransLines/Linac4/2015/
+ *
+ * Execute with:  >madx < l4t.madx
+ * This file is for H- at Ekin=160MeV
+ *****************************************************/
+
+
+/*****************************************************************************
+ * TITLE
+ *****************************************************************************/
+ title, 'L4T 2015 optics. H- E_kin=160 MeV';
+
+ option, echo;
+!option, RBARC=FALSE;
+
+
+/*****************************************************************************
+ * L4TB
+ * NB! The order of the .ele .str and .seq files matter.
+ *     The reason is a >feature< of MADX
+ *
+ * Choose to run L4T or L4T+HST uncommenting one of the two
+ *****************************************************************************/
+/*** L4T *******/
+ call, file = '../elements/l4t.ele';
+ call, file = '../sequence/l4t.seq';
+ call, file = '../strength/l4t.str';
+ call, file = '../aperture/l4t.dbx';
+/***************/
+
+/*** L4T+HST ***
+ call, file = '../elements/l4t.ele';
+ call, file = '../sequence/l4t-hst.seq';
+ call, file = '../strength/l4t.str';
+ call, file = '../aperture/l4t-hst.dbx';
+/***************/
+
+/*****************************************************************************
+ * set initial twiss parameters
+ *****************************************************************************/
+call, file = '../inp/l4t.inp';
+
+
+/*****************************************************************************
+ * store initial parameters in memory block
+ *****************************************************************************/
+ INITBETA0: BETA0,
+  BETX  = BETX0,
+  ALFX  = ALFX0,
+  MUX   = MUX0,
+  BETY  = BETY0,
+  ALFY  = ALFY0,
+  MUY   = MUY0,
+  X     = X0,
+  PX    = PX0,
+  Y     = Y0,
+  PY    = PY0,
+  T     = T0,
+  PT    = PT0,
+  DX    = DX0,
+  DPX   = DPX0,
+  DY    = DY0,
+  DPY   = DPY0;
+EMITX=0.67E-6;
+EMITY=1.46E-6;
+
+/*******************************************************************************
+ * Beam
+ * NB! beam->ex == (beam->exn)/(beam->gamma*beam->beta*4)
+ *******************************************************************************/
+ BEAM, PARTICLE=Hminus, MASS=.93929, CHARGE=-1, ENERGY=1.09929, EX=EMITX, EY=EMITY;
+!show, beam;
+
+
+/*******************************************************************************
+ * survey
+ *******************************************************************************/
+    sur2 : macro={
+
+        use, sequence=L4T;
+
+        X0     =    -1905.00325  ;
+        Y0     =     2431.16062  ;
+        Z0     =     1946.16673  ;
+        THETA0 =    -5.4115944   ;
+        title, "L4T INPUT FOR GEODE";
+        set,  format="-17s";
+        set,  format="17.12f";
+        select, flag=survey,clear;
+        select, flag=survey, column=NAME,S,L,ANGLE,X,Y,Z,THETA,PHI,PSI,GLOBALTILT,SLOT_ID;
+        survey, x0= X0, y0= Y0, z0= Z0,
+                theta0= THETA0, phi0=  0.0000000000, psi0= 0.0000000000,
+                file="../out/l4t_input_for_GEODE.sur";
+
+        XX0    =     1905.00325  ;
+        YY0    =     1946.16673  ;
+        ZZ0    =     2431.16062  ;
+        THETA0 =   2.4423872340  ;
+        title, "L4T MADX survey";
+        set,  format="-17s";
+        set,  format="17.12f";
+        select, flag=survey,clear;
+        select, flag=survey, column=NAME,S,L,ANGLE,Z,X,Y,THETA,PHI,PSI,GLOBALTILT,SLOT_ID;
+        survey, x0= YY0, y0= ZZ0, z0= XX0,
+                theta0= THETA0, phi0=  0.0000000000, psi0= 0.0000000000,
+                file="../out/l4t.sur";
+   };
+   exec, sur2;
+
+
+/*******************************************************************************
+ * twiss
+ *******************************************************************************/
+
+ maketwiss: macro=
+ {
+     ptc_create_universe;
+     ptc_create_layout,model=2,method=6,nst=5,exact,time=false;
+     ptc_twiss,table=ptc_twiss,BETA0=INITBETA0,icase=5,no=1; ! ,file="twiss";
+     ptc_end;
+ };
+
+
+/*******************************************************************************
+ * Use
+ *******************************************************************************/
+ use, sequence=L4T;
+
+
+/***************************************************
+ * Write ptc_twiss table. NB! Values at end of elements
+ ***************************************************/
+set,  format="-18s";
+set,  format="50.15e";
+
+! ns    ~ longitudinal number of sigma
+! nt    ~ transverse   number of sigma
+! dimxc ~ size-x with dispersion, dimyc ~ size-y with dispersion,
+! value, beam->ex, beam->ey, beam->sige;
+
+ ns = 2;
+ nt = 3;
+ dimxc := sqrt( nt^2*table(ptc_twiss,beta11)*beam->ex + ns^2*(beam->sige*table(ptc_twiss,disp1))^2 );
+ dimyc := sqrt( nt^2*table(ptc_twiss,beta22)*beam->ey + ns^2*(beam->sige*table(ptc_twiss,disp3))^2 );
+
+select,flag=twiss,clear;
+twiss, betx=5.53,bety=11.0,alfx=1.74,alfy=-3.0, dx=0, dpx=0, mux=0,muy=0, deltap=0.000625, RMATRIX=True, file=l4thminus.tfs,save;
+
+
+
+
+/*******************************************************************************
+ * Plot l4t
+ *******************************************************************************/
+option, -info;
+option, -echo;
+
+resplot;
+setplot, post=2;
+
+plot, title='l4t'   , table=ptc_twiss
+                   , haxis=s
+                   , vaxis1=beta11,beta22
+                   , style:=100,symbol:=4,colour=100
+                   , file = "../out/l4t";
+
+plot, title='l4t'   , table=ptc_twiss
+                   , haxis=s
+                   , vaxis1=beta11,beta22
+                   , vaxis2=disp1
+                   , range=#S/#e
+                   , style:=100, symbol:=4, colour=100;
+
+plot, title='l4t'   , table=ptc_twiss
+                   , haxis=s
+                   , vaxis1=disp1,disp3
+                   , range=#S/#e
+                   , style:=100, symbol:=4, colour=100;
+
+/* Use >gv madx01.eps  to plot */
+
+
+/*******************************************************************************
+ * Clean up (remove Maxwellian_bend_for_ptc.txt )
+ *******************************************************************************/
+
+system, "rm Maxwellian_bend_for_ptc.txt";
+
+
+stop;
+
+
+
+
