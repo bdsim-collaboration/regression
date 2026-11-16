@@ -209,6 +209,56 @@ def quadrupole_thick_matrix() -> int:
 
     return 0
 
+def quadrupole_offset_tilt_matches_bdsim() -> int:
+    import bdsim
+
+    parser = bdsim.BDSParser()
+    beam = parser.GetBeam()
+    beam["particleName"] = "proton"
+    beam["kineticEnergy"] = 100.0  # GeV
+
+    quadrupole = bdsim.Element()
+    quadrupole.name = "offset_quadrupole"
+    quadrupole.type = bdsim.elementtype.ElementType.QUAD
+    quadrupole["l"] = 0.2
+    quadrupole["k1"] = 0.5
+    quadrupole["apertureType"] = "circular"
+    quadrupole["aper1"] = 0.05
+    quadrupole["offsetX"] = 0.01
+    quadrupole["offsetY"] = -0.02
+    quadrupole["tilt"] = 0.1
+    parser.GetBeamline().push_back(quadrupole, False, "element")
+
+    tracker = bdsim.BDSLinkTrackerInterface.GetInstance(
+        parser,
+        referenceParticlePDG=2212,
+        referenceKineticEnergy=100 * bdsim.clhep.GeV,
+    )
+    tracker.AddParticle(10, -20, 0, 0, 0, 0, 1, 1, 0, 17, 2212)
+
+    link = tracker.GetBDSIMLink()
+    link.SelectLinkElement("offset_quadrupole")
+    link.BeamOn(1)
+
+    hits = link.SamplerHits()
+    assert hits.entries() == 1
+    coordinates = hits[0].coords
+
+    # Reference values from standalone BDSIM with the same element and input.
+    expected = {
+        "x": 9.9001666531,
+        "xp": -0.000996670569293,
+        "y": -20.2003344893,
+        "yp": -0.00200667465106,
+    }
+
+    assert coordinates.x == pytest.approx(expected["x"], abs=2e-5)
+    assert coordinates.xp == pytest.approx(expected["xp"], abs=2e-8)
+    assert coordinates.y == pytest.approx(expected["y"], abs=2e-5)
+    assert coordinates.yp == pytest.approx(expected["yp"], abs=2e-8)
+
+    return 0
+
 def test_drift_proton_5TeV(make_bdsim_test_code, run_bdsim_test_code_as_subprocess) :
     os.chdir(Path(__file__).resolve().parent)
     code = make_bdsim_test_code(drift_proton_5TeV, args="", dir=os.path.dirname(os.path.abspath(__file__)))
@@ -220,6 +270,17 @@ def test_quadrupole_thick_matrix(
 ) -> None:
     code = make_bdsim_test_code(
         quadrupole_thick_matrix,
+        args="",
+        dir=os.path.dirname(os.path.abspath(__file__)),
+    )
+    run_bdsim_test_code_as_subprocess(code)
+
+def test_quadrupole_offset_tilt_matches_bdsim(
+    make_bdsim_test_code: Callable[..., str],
+    run_bdsim_test_code_as_subprocess: Callable[[str], str],
+) -> None:
+    code = make_bdsim_test_code(
+        quadrupole_offset_tilt_matches_bdsim,
         args="",
         dir=os.path.dirname(os.path.abspath(__file__)),
     )
