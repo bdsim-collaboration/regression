@@ -86,6 +86,8 @@ class test_nprimary :
                          "16_eloss/test_eloss_collimator":{"short":1000,"medium":10000,"long":10000},
                          "16_eloss/test_eloss_collimator_storeElossLinks": {"short": 1000, "medium": 10000, "long": 10000},
                          "20_scorer/test_scorer3d": {"short": 5000, "medium": 10000, "long": 50000},
+                         "22_processes/test_laser_pulse_timing_photodetachment_antiparallel":{"short": 100, "medium": 100, "long": 100},
+                         "22_processes/test_laser_pulse_timing_photodetachment_parallel":{"short": 100, "medium": 100, "long": 100},
                          "22_processes/test_laserwire_compton_cumulative":{"short":10000,"medium":10000,"long":10000},
                          "22_processes/test_laserwire_compton_multiStep": {"short": 10000, "medium": 10000,"long": 10000},
                          "22_processes/test_synch_rad": {"short": 10000, "medium": 100000,"long": 1000000},
