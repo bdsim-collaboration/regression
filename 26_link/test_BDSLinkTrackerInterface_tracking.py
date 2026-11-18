@@ -167,16 +167,30 @@ def quadrupole_thick_matrix() -> int:
     beam = parser.GetBeam()
     beam["particleName"] = "proton"
     beam["kineticEnergy"] = 100.0  # GeV
+    beam["distrType"] = "reference"
 
-    quadrupole = bdsim.Element()
-    quadrupole.name = "quadrupole"
-    quadrupole.type = bdsim.elementtype.ElementType.QUAD
-    quadrupole["l"] = length
-    quadrupole["k1"] = k1
-    quadrupole["apertureType"] = "circular"
-    quadrupole["aper1"] = 0.1
-    quadrupole["outerDiameter"] = 0.3
-    parser.GetBeamline().push_back(quadrupole, False, "element")
+    parameters = parser.GetGlobal_Parameters()
+    parameters.name = "quadrupole"
+    parameters.type = bdsim.elementtype.ElementType.QUAD
+    parameters["l"] = length
+    parameters["k1"] = k1
+    parameters["apertureType"] = "circular"
+    parameters["aper1"] = 0.1
+    parameters["outerDiameter"] = 0.3
+    parser.write_table("quadrupole", bdsim.elementtype.ElementType.QUAD, False)
+    parser.ClearParams()
+
+    parameters = parser.GetGlobal_Parameters()
+    parameters.name = "link_line"
+    parameters.type = bdsim.elementtype.ElementType.LINE
+    parser.add_element_temp(
+        "quadrupole", 1, False, bdsim.elementtype.ElementType.LINE
+    )
+    parser.AddVariable("link_line")
+    parser.write_table("link_line", bdsim.elementtype.ElementType.LINE, True)
+    parser.current_line = "link_line"
+    parser.expand_line("link_line", "", "")
+    parser.expand_sequences()
 
     tracker = bdsim.BDSLinkTrackerInterface.GetInstance(
         parser,
@@ -216,18 +230,34 @@ def quadrupole_offset_tilt_matches_bdsim() -> int:
     beam = parser.GetBeam()
     beam["particleName"] = "proton"
     beam["kineticEnergy"] = 100.0  # GeV
+    beam["distrType"] = "reference"
 
-    quadrupole = bdsim.Element()
-    quadrupole.name = "offset_quadrupole"
-    quadrupole.type = bdsim.elementtype.ElementType.QUAD
-    quadrupole["l"] = 0.2
-    quadrupole["k1"] = 0.5
-    quadrupole["apertureType"] = "circular"
-    quadrupole["aper1"] = 0.05
-    quadrupole["offsetX"] = 0.01
-    quadrupole["offsetY"] = -0.02
-    quadrupole["tilt"] = 0.1
-    parser.GetBeamline().push_back(quadrupole, False, "element")
+    parameters = parser.GetGlobal_Parameters()
+    parameters.name = "offset_quadrupole"
+    parameters.type = bdsim.elementtype.ElementType.QUAD
+    parameters["l"] = 0.2
+    parameters["k1"] = 0.5
+    parameters["apertureType"] = "circular"
+    parameters["aper1"] = 0.05
+    parameters["offsetX"] = 0.01
+    parameters["offsetY"] = -0.02
+    parameters["tilt"] = 0.1
+    parser.write_table(
+        "offset_quadrupole", bdsim.elementtype.ElementType.QUAD, False
+    )
+    parser.ClearParams()
+
+    parameters = parser.GetGlobal_Parameters()
+    parameters.name = "link_line"
+    parameters.type = bdsim.elementtype.ElementType.LINE
+    parser.add_element_temp(
+        "offset_quadrupole", 1, False, bdsim.elementtype.ElementType.LINE
+    )
+    parser.AddVariable("link_line")
+    parser.write_table("link_line", bdsim.elementtype.ElementType.LINE, True)
+    parser.current_line = "link_line"
+    parser.expand_line("link_line", "", "")
+    parser.expand_sequences()
 
     tracker = bdsim.BDSLinkTrackerInterface.GetInstance(
         parser,
