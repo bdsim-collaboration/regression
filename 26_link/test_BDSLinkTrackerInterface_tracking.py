@@ -2,10 +2,13 @@
 # pytest -n auto
 
 import os
-import pytest
 from pathlib import Path
+from typing import Callable
+
+import pytest
 
 pytestmark = pytest.mark.xfail(reason="requires bdsim")
+
 
 def drift_proton_5TeV(batch=1) :
     import bdsim
@@ -151,10 +154,174 @@ def collimator_proton_5TeV(batch=1) :
     else :
         return tracker_l, df
 
+def quadrupole_thick_matrix() -> int:
+    import bdsim
+    import math
+
+    length = 0.5       # m
+    k1 = 0.2           # m^-2
+    x0 = 10.0          # mm
+    y0 = 2.0           # mm
+
+    parser = bdsim.BDSParser()
+    beam = parser.GetBeam()
+    beam["particleName"] = "proton"
+    beam["kineticEnergy"] = 100.0  # GeV
+    beam["distrType"] = "reference"
+
+    parameters = parser.GetGlobal_Parameters()
+    parameters.name = "quadrupole"
+    parameters.type = bdsim.elementtype.ElementType.QUAD
+    parameters["l"] = length
+    parameters["k1"] = k1
+    parameters["apertureType"] = "circular"
+    parameters["aper1"] = 0.1
+    parameters["outerDiameter"] = 0.3
+    parser.write_table("quadrupole", bdsim.elementtype.ElementType.QUAD, False)
+    parser.ClearParams()
+
+    parameters = parser.GetGlobal_Parameters()
+    parameters.name = "link_line"
+    parameters.type = bdsim.elementtype.ElementType.LINE
+    parser.add_element_temp(
+        "quadrupole", 1, False, bdsim.elementtype.ElementType.LINE
+    )
+    parser.AddVariable("link_line")
+    parser.write_table("link_line", bdsim.elementtype.ElementType.LINE, True)
+    parser.current_line = "link_line"
+    parser.expand_line("link_line", "", "")
+    parser.expand_sequences()
+
+    tracker = bdsim.BDSLinkTrackerInterface.GetInstance(
+        parser,
+        referenceParticlePDG=2212,
+        referenceKineticEnergy=100 * bdsim.clhep.GeV,
+    )
+    tracker.AddParticle(x0, y0, 0, 0, 0, 0, 1, 1, 0, 17, 2212)
+
+    link = tracker.GetBDSIMLink()
+    link.SelectLinkElement("quadrupole")
+    link.BeamOn(1)
+
+    hits = link.SamplerHits()
+    assert hits.entries() == 1
+    coordinates = hits[0].coords
+
+    root_k = math.sqrt(k1)
+    phase = root_k * length
+    expected = {
+        "x": math.cos(phase) * x0,
+        "xp": -root_k * math.sin(phase) * x0 * 1e-3,
+        "y": math.cosh(phase) * y0,
+        "yp": root_k * math.sinh(phase) * y0 * 1e-3,
+    }
+
+    assert coordinates.x == pytest.approx(expected["x"], abs=2e-5)
+    assert coordinates.xp == pytest.approx(expected["xp"], abs=2e-8)
+    assert coordinates.y == pytest.approx(expected["y"], abs=2e-5)
+    assert coordinates.yp == pytest.approx(expected["yp"], abs=2e-8)
+
+    return 0
+
+def quadrupole_offset_tilt_matches_bdsim() -> int:
+    import bdsim
+
+    parser = bdsim.BDSParser()
+    beam = parser.GetBeam()
+    beam["particleName"] = "proton"
+    beam["kineticEnergy"] = 100.0  # GeV
+    beam["distrType"] = "reference"
+
+    # Generic quadrupoles tracked with the default bdsimmatrix integrator do
+    # not currently apply element offsets and tilts. Use the Geant4
+    # integrator here so this test covers the BDSLink geometry transforms.
+    options = parser.GetOptions()
+    options["integratorSet"] = "geant4"
+
+    parameters = parser.GetGlobal_Parameters()
+    parameters.name = "offset_quadrupole"
+    parameters.type = bdsim.elementtype.ElementType.QUAD
+    parameters["l"] = 0.2
+    parameters["k1"] = 0.5
+    parameters["apertureType"] = "circular"
+    parameters["aper1"] = 0.05
+    parameters["offsetX"] = 0.01
+    parameters["offsetY"] = -0.02
+    parameters["tilt"] = 0.1
+    parser.write_table(
+        "offset_quadrupole", bdsim.elementtype.ElementType.QUAD, False
+    )
+    parser.ClearParams()
+
+    parameters = parser.GetGlobal_Parameters()
+    parameters.name = "link_line"
+    parameters.type = bdsim.elementtype.ElementType.LINE
+    parser.add_element_temp(
+        "offset_quadrupole", 1, False, bdsim.elementtype.ElementType.LINE
+    )
+    parser.AddVariable("link_line")
+    parser.write_table("link_line", bdsim.elementtype.ElementType.LINE, True)
+    parser.current_line = "link_line"
+    parser.expand_line("link_line", "", "")
+    parser.expand_sequences()
+
+    tracker = bdsim.BDSLinkTrackerInterface.GetInstance(
+        parser,
+        referenceParticlePDG=2212,
+        referenceKineticEnergy=100 * bdsim.clhep.GeV,
+    )
+    tracker.AddParticle(10, -20, 0, 0, 0, 0, 1, 1, 0, 17, 2212)
+
+    link = tracker.GetBDSIMLink()
+    link.SelectLinkElement("offset_quadrupole")
+    link.BeamOn(1)
+
+    hits = link.SamplerHits()
+    assert hits.entries() == 1
+    coordinates = hits[0].coords
+
+    # Reference values from standalone BDSIM with the Geant4 integrator and
+    # the same element and input. The particle starts on the displaced axis.
+    expected = {
+        "x": 10.0,
+        "xp": 0.0,
+        "y": -20.0,
+        "yp": 0.0,
+    }
+
+    assert coordinates.x == pytest.approx(expected["x"], abs=2e-5)
+    assert coordinates.xp == pytest.approx(expected["xp"], abs=2e-8)
+    assert coordinates.y == pytest.approx(expected["y"], abs=2e-5)
+    assert coordinates.yp == pytest.approx(expected["yp"], abs=2e-8)
+
+    return 0
+
 def test_drift_proton_5TeV(make_bdsim_test_code, run_bdsim_test_code_as_subprocess) :
     os.chdir(Path(__file__).resolve().parent)
     code = make_bdsim_test_code(drift_proton_5TeV, args="", dir=os.path.dirname(os.path.abspath(__file__)))
     result = run_bdsim_test_code_as_subprocess(code)
+
+def test_quadrupole_thick_matrix(
+    make_bdsim_test_code: Callable[..., str],
+    run_bdsim_test_code_as_subprocess: Callable[[str], str],
+) -> None:
+    code = make_bdsim_test_code(
+        quadrupole_thick_matrix,
+        args="",
+        dir=os.path.dirname(os.path.abspath(__file__)),
+    )
+    run_bdsim_test_code_as_subprocess(code)
+
+def test_quadrupole_offset_tilt_matches_bdsim(
+    make_bdsim_test_code: Callable[..., str],
+    run_bdsim_test_code_as_subprocess: Callable[[str], str],
+) -> None:
+    code = make_bdsim_test_code(
+        quadrupole_offset_tilt_matches_bdsim,
+        args="",
+        dir=os.path.dirname(os.path.abspath(__file__)),
+    )
+    run_bdsim_test_code_as_subprocess(code)
 
 # TODO
 #def test_collimator_proton_5TeV(make_bdsim_test_code, run_bdsim_test_code_as_subprocess) :
