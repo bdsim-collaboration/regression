@@ -232,6 +232,12 @@ def quadrupole_offset_tilt_matches_bdsim() -> int:
     beam["kineticEnergy"] = 100.0  # GeV
     beam["distrType"] = "reference"
 
+    # Generic quadrupoles tracked with the default bdsimmatrix integrator do
+    # not currently apply element offsets and tilts. Use the Geant4
+    # integrator here so this test covers the BDSLink geometry transforms.
+    options = parser.GetOptions()
+    options["integratorSet"] = "geant4"
+
     parameters = parser.GetGlobal_Parameters()
     parameters.name = "offset_quadrupole"
     parameters.type = bdsim.elementtype.ElementType.QUAD
@@ -274,12 +280,13 @@ def quadrupole_offset_tilt_matches_bdsim() -> int:
     assert hits.entries() == 1
     coordinates = hits[0].coords
 
-    # Reference values from standalone BDSIM with the same element and input.
+    # Reference values from standalone BDSIM with the Geant4 integrator and
+    # the same element and input. The particle starts on the displaced axis.
     expected = {
-        "x": 9.9001666531,
-        "xp": -0.000996670569293,
-        "y": -20.2003344893,
-        "yp": -0.00200667465106,
+        "x": 10.0,
+        "xp": 0.0,
+        "y": -20.0,
+        "yp": 0.0,
     }
 
     assert coordinates.x == pytest.approx(expected["x"], abs=2e-5)
